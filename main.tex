@@ -1,0 +1,93 @@
+\documentclass[a4paper,12pt]{article}
+% Package to make citations superscrit with brackets
+\usepackage[super,square]{natbib}
+% Package to change margin size
+\usepackage{anysize}
+\marginsize{2cm}{2cm}{1cm}{2cm}
+% Package to make headers
+\usepackage{fancyhdr}
+\renewcommand{\headrulewidth}{0pt}
+% Package for highligths
+\usepackage{soul}
+% Colors for the references links
+\usepackage[dvipsnames]{xcolor}
+% Package to link references
+\usepackage{hyperref}
+\usepackage{amsmath}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=CadetBlue,
+    filecolor=CadetBlue,      
+    urlcolor=CadetBlue,
+}
+% Package for lorem ipsum
+\usepackage{lipsum}
+% Package for multicolumn
+\usepackage{multicol}
+% Package for removing paragraph identations
+\usepackage{parskip}
+\setlength\columnsep{18pt}
+% Sets bastract
+\renewenvironment{abstract}
+ {\par\noindent\textbf{\abstractname}\ \ignorespaces \\}
+ {\par\noindent\medskip}
+
+\usepackage{xcolor} 
+\definecolor{verd}{rgb}{0.0, 1.0, 0.0} % positive
+\definecolor{azul}{rgb}{0.0, 0.0, 1.0} % attention
+\definecolor{rojo}{rgb}{1.0, 0.0, 0.0} % negative
+\newcommand{\rojo}[1]{\textcolor{rojo}{#1}} 
+\newcommand{\verd}[1]{\textcolor{verd}{#1}} 
+\newcommand{\azul}[1]{\textcolor{azul}{#1}} 
+% ------------------------------------------------------------ BEGIN DOCUMENT !
+\begin{document}
+% Makes header
+\pagestyle{fancy}
+\thispagestyle{empty}
+\fancyhead[R]{\textit{Alejandro S. Vega-Nogales}}
+\fancyhead[L]{Report Date: April 2025}
+% Makes footnotes with an asterisk
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\begin{center}
+\Large{\textbf{Remote Sensing Assessment and Monitoring of Distributed Rooftop Solar Panel Arrays}}
+\vspace{0.5cm}
+{\color{gray}\hrule}
+\medskip
+\large\textbf{A report on methods for Computer Vision extraction and Photovoltaic energy forecasting} \\
+\bigskip
+\normalsize Alejandro S. Vega-Nogales, Data Scientist @ Maxar, CCOM MS Student \\
+\vspace{0.1cm}
+SIN: 801-13-7956 \quad github: \href{https://github.com/avega17}{avega17}  \quad email: \href{mailto:alejandro.vega1@upr.edu}{alejandro.vega1@upr.edu} \\
+\vspace{0.1cm}
+\textit{UPRRP - Computer Science Department} \\
+\vspace{0.1cm}
+CCOM 6050: Final Project -- Midterm Project Report
+\medskip
+\normalsize
+\end{center}
+{\color{gray}\hrule}
+\vspace{0.4cm}
+
+\tableofcontents
+\hfill
+\clearpage
+
+\input{./sections/0_introduction.tex}
+{\color{gray}\hrule}
+\clearpage
+\input{./sections/1_background.tex}
+{\color{gray}\hrule}
+\medskip
+\input{./sections/2_methodology.tex}
+\input{./sections/3_algorithms.tex}
+\input{./sections/4_review.tex}
+% \input{./sections/3_section.tex} % in case you need it
+% \input{./sections/4_section.tex} % in case you need it
+\input{./sections/5_conclusion.tex}
+\clearpage
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
+
+% Alejandro Vega, estudiante de MS en CCOM, estamos trabajando sobre "Self-Supervised Learning for Enhancing Multimodal Earth Observation Data Analysis".  % March 07, 2025

@@ -1,0 +1,277 @@
+% \begin{multicols}{2}
+\section{Literature Review}
+
+\subsection{[CCOM6050] Data Fusion Reviews}
+
+\subsubsection{2019-RS-DF-Multisource}
+\begin{itemize}
+    \item Title: ``Multisource and Multitemporal Data Fusion in Remote Sensing: A Comprehensive Review of the State of the Art''
+    \item Authors: Pedram Ghamisi; Behnood Rasti; Naoto Yokoya; Qunming Wang; Bernhard Hofle; Lorenzo Bruzzone
+    \item Year: 2019
+    \item Link/Source: \href{https://doi.org/10.1109/MGRS.2018.2890023}{10.1109/MGRS.2018.2890023}
+    \item Main objective:
+    \item Methodology used:
+    \item What I got out of the paper:
+        \begin{itemize}
+            \item “bird’s eye view” of contributions in:
+                \begin{itemize}
+                    \item pansharpening and resolution enhancement
+                    \item multitemporal data fusion
+                \end{itemize}
+            \item Traditionally in Remote Sensing (RS), there are four dimensions that provide information:
+                \begin{itemize}
+                    \item Spatial: 2D (x,y) coordinates
+                    \item Temporal : 1D (t) time
+                    \item Spectral: 1D ($\lambda$) wavelength 
+                    \item Radiometric: 1D (r) numerical precision in a pixel's radiance/reflectance/intensity values
+                \end{itemize}
+            \item RS measurement process is explored via describing the four components of a "physical model":
+                \begin{itemize}
+                    \item Scene model: defines the subject of interest
+                    \item Atmosphere model: defines the transform of Electromagnetic Spectrum (EMS) from surface to sensor
+                    \item Sensor model: defines the measurement process (e.g. signal-to-noise ratio (SNR), sweep time, nadir angle, number of bands, etc.)
+                    \item Image model: defines the sampling process (e.g. pixel size, spatial resolution, etc.)
+                \end{itemize}
+            \item \textbf{``All data fusion methods attempt to overcome the above measurement and sampling processes''} \\ 
+            ``Understanding these [differences in] measurement and sampling processes is\dots key to characterizing methods of data fusion'' 
+            $\implies$ can be approached as a reconstruction problem\dots\\
+            \item Spatio-Spectral data fusion
+                \begin{itemize}
+                    \item Pansharpening: a specific case of spatio-spectral fusion where a high-resolution panchromatic image is fused with a lower-resolution multispectral image. \\
+                    This fusion process attempts to preserve the spectral information of the multispectral image while enhancing the spatial resolution for \textit{all} bands. 
+                    \item Most methods can be categorized into: 
+                        \begin{enumerate}
+                            \item Component substitution: spectrally transforms MS data into a new feature space to separate spatial and spectral information, \\ 
+                            then substitutes the spatial component is substituted for the high-resolution panchromatic image while using histogram matching to adjust the PAN intensity to match the original spectral information.
+                                \begin{itemize}
+                                    \item Pros: \textit{high spatial fidelity}; \textit{low computational cost}; \textit{robust against misregistration errors (i.e. spatial misalignment)}
+                                    \item Cons: \textit{suffer from global spectral distortion}; \textit{lower spectral fidelity}
+                                    \item Methods include:
+                                    \begin{enumerate}
+                                        \item \textbf{Intensity-Hue-Saturation (IHS)}
+                                        \item Principal Component Analysis (PCA)
+                                        \item Gram-Schmidt (GS)
+                                    \end{enumerate}
+                                \end{itemize}
+                            \item Multiresolution analysis: extracts spatial high-frequency components from the panchromatic image and injects with coefficients into the low-resolution multispectral image.
+                                \begin{itemize}
+                                    \item Pros: Spectral consistency (e.g. no spectral loss)
+                                    \item Cons: \textit{Higher computational complexity and cost}
+                                    \item Methods include:
+                                    \begin{enumerate}
+                                        \item Box filtering
+                                        \item Gaussian filtering
+                                        \item Bilateral filtering
+                                        \item Wavelet transform
+                                        \item Curvelet transform
+                                    \end{enumerate}
+                                \end{itemize}
+                            \item Geostatistical analysis: can preserve the spectral properties of the original coarse image while enhancing the spatial resolution.
+                                \begin{itemize}
+                                    \item Pros: 
+                                    \item Cons: 
+                                    \item Methods include: several types of \textit{kriging} (spatial interpolation) which are used to estimate unmeasured values based on neighboring values
+                                \end{itemize}
+                            \item Subspace representation: uses a subspace spanned by a set of basis vectors to analyze intrinsic spectral characteristics
+                                \begin{itemize}
+                                    \item Pros: 
+                                    \item Cons: \textit{High computational cost}; \textit{can introduce spectral artifacts}
+                                    \item Methods include: Bayesian analysis, Matrix Factorization, Spectral Unmixing
+                                \end{itemize}
+                            \item Sparse representation: captures the spectral signatures of materials in an image patch using a sparse representation with a few basis vectors
+                                \begin{itemize}
+                                    \item Pros: \textit{Efficient storage and processing}; \textit{high spectral fidelity}; \textit{sparse representation can be used in downstream CV tasks}
+                                    \item Cons: \textit{Targeted for HSI-MSI fusion}; \textit{very high computational cost}
+                                    \item Methods include: Hierarchical Pyramid models; extraction of spectral signatures; 
+                                \end{itemize}
+                        \end{enumerate}
+                    \item Some quantitative evaluation metrics:
+                        \begin{enumerate}
+                            \item Peak Signar-to-Noise Ratio (PSNR): evaluates the quality of a reconstructed image by comparing the maximum possible power of a signal to the power of corrupting noise
+                            \item Spectral Angle Mapper (SAM): determines the similarity between a transformed image spectrum and a reference spectrum by calculating the angle between their vector representations in the spectral space
+                            \item ERGAS (\textit{erreur relative globale adimensionnelle de synthèse}): measures image quality in terms of the per-band normalized mean error between the fused image and the reference image
+                            \item Q\textsuperscript{2n}: a global reconstruction quality index 
+                        \end{enumerate}
+                \end{itemize}
+            \item Spatio-temporal data fusion
+                \begin{itemize}
+                    \item ``a technique to blend fine spatial resolution, but coarse temporal resolution data with fine temporal resolution, but coarse spatial resolution data''
+                    \item \textbf{Most methods are based on the strong assumption of no abrupt changes in Land Cover and Land Use (LCLU) across time} (ok for our work if we focus on rooftops)
+                    \item Methods mentioned:
+                    \begin{enumerate}
+                        \item STARFM (Spatial and Temporal Adaptive Reflectance Fusion Model)
+                        \item ESTARFM (Enhanced STARFM)
+                    \end{enumerate}
+                    \item Common sensor pairings: 
+                        \begin{enumerate}
+                            \item MODIS (~daily; 0.25km-1km) + Landsat (~16 days; 30m)
+                            \item MODIS + Sentinel-2 (~5 days; 10m)
+                            \item GOES-R (5-60 min; 0.25-2km) + ?? 
+                        \end{enumerate}
+                    
+                \end{itemize}
+        \end{itemize}
+    \item Key findings or contributions for our topic:
+        \begin{itemize}
+            \item Outlines the centrality of Coherence for Data Fusion with RS data: \\ 
+            
+            ``Data fusion is made possible because each dataset to be fused represents a different view of the same real world defined in space and time (generalized by the scene model), 
+            with each view having its own measurable properties, measurement processes, and sampling processes.'' \\ 
+            \\ 
+            $\implies$ ``one should expect some level of \textbf{coherence} between 
+            the real world (the source) and the multiple datasets (the observations)''
+            % ``The real world is spatially correlated, at least at some scale and this phenomenon has been used in many algorithms''
+            \item \textbf{Spatio-temporal fusion} was identified as the relevant type of fusion for our work: \\
+            \\
+            ``A large focus of attention currently is on the specific problem that arises from the trade-off in remote sensing between spatial resolution and temporal frequency;
+            in particular the fusion of coarse-spatial/fine-temporal-resolution with fine-spatial/coarse-temporal-resolution space-time datasets''
+            \item For an individual remote sensing platform, ``there always exists a trade-off between spatial resolution and temporal resolution (revisit time)''. This can be worked around with a constellation of multiple sensors. 
+            \item A remaining major issue is how to conduct fair comparisons of performance and accuracy of different methods.
+        \end{itemize}
+\end{itemize}
+
+\subsubsection{2024-DL-Data-Fusion}
+\begin{itemize}
+    \item Title: ``A Comprehensive Review on Deep Learning-Based Data Fusion'''
+    \item Authors: Mazhar Hussain; Mattias O' Nils; Jan Lundgren; Seyed Jalaleddin Mousavirad
+    \item Year: 2024
+    \item Link/Source: \href{https://doi.org/10.1109/ACCESS.2024.3508271}{10.1109/ACCESS.2024.3508271} 
+    \item Main objective: 
+    \item Methodology used:
+    \item Key findings or contributions for our topic: 
+\end{itemize}
+
+\subsection{[CCOM6050] Data Fusion Datasets}
+
+\begin{itemize}
+    \item Title: 
+    \item Authors:
+    \item Year:
+    \item Link/Source:
+    \item Main objective of the paper:
+    \item Methodology used:
+    \item Number of annotations:
+    \item Date range for annotations:
+    \item Annotation locations:
+    \item Key findings or contributions:
+\end{itemize}
+
+\subsection{PV imagery and locations Datasets}
+
+\subsubsection{2023-SDG-Maxar-PV-dataset}
+
+\begin{itemize}
+    \item Title: ``A solar panel dataset of very high resolution satellite imagery to support the Sustainable Development Goals''
+    \item Authors: Cecilia Clark [ex-Maxar]; Fabio Pacifici[Maxar]
+    \item Year: 2023
+    \item Link/Source: \href{https://doi.org/10.1038/s41597-023-02539-8}{10.1038/s41597-023-02539-8} | 
+    \href{https://resources.maxar.com/geospatial-foundation/15-cm-hd-and-30-cm-view-ready-solar-panels-germany}{imagery} |
+    \href{https://figshare.com/articles/dataset/Solar_Panel_Object_Labels/22081091}{annotations}
+    \item Main objective of the paper: 
+    To provide a VHR satellite imagery dataset of annotated, primarily residential, solar panels to support UN's Sustainable Development Goals, and further improve solar panel detection models.
+    \item Methodology used: \\
+    Obtained 31 cm resolution satellite imagery and applied proprietary HD processing to generate 15.5 cm resolution imagery used for panel detection.
+    Labels created with Object Detection model (YOLT) and validated by human annotators.
+    \item Number of annotations: 2,542
+    \item Date range for annotations: 2020/09/18
+    \item Annotation locations: Southern Germany 
+    \item Key findings or contributions: \\
+    The dataset is designed to support small object detection and focuses on annotated, primarily residential, solar panels. 
+    Includes paired native resolution (31 cm) and HD (15.5 cm) satellite imagery. 
+\end{itemize}
+
+\subsubsection{2021-global-PV-inventory}
+
+\begin{itemize}
+    \item Title: ``A global inventory of photovoltaic solar energy generating units''
+    \item Authors: L. Kruitwagen; K. T. Story; J. Friedrich; L. Byers; S. Skillman; C. Hepburn 
+    \item Year: 2021
+    \item Link/Source: \href{https://doi.org/10.1038/s41586-021-03957-7}{10.1038/s41586-021-03957-7} | 
+    \href{https://zenodo.org/records/5005868}{PV Labels} | 
+    \href{https://github.com/Lkruitwagen/solar-pv-global-inventory}{Code Repo}
+    \item Main objective of the paper: To provide a global inventory of commercial, industrial, and utility-scale PV installations ($\geq 10kW$ nominal generation capacity)
+    \item Methodology used: Machine Learning pipeline (series of CNN + RNN models), OpenStreetMap annotations, heuristic filters, negative sampling (non solar panel objects)
+    \item Number of annotations: 68,661 facilities [36,882 (Sentinel-2), 38,541 (SPOT)]
+    \item Date range for annotations: 2016/06/01 - 2018/09/30
+    \item Annotation locations: Global (131 countries)  
+    \item Key findings or contributions: The dataset expands previous publicly available data by $> 4x$. Provides an estimate of global installed generating capacity: $423 (~\pm75) GW$. Mentions importance of spectral signature of PV panels and extraction of spectral features. Provides implementation repo. ``The pipeline has two stages: an initial global search designed to maximize installation recall, followed by a process to remove false positives and estimate installation dates.''
+\end{itemize}
+
+\subsubsection{2020-UK-Solar-PV}
+
+\begin{itemize}
+    \item Title: ``A harmonised, high-coverage, open dataset of solar photovoltaic installations in the UK''
+    \item Authors: Dan Stowell; Jack Kelly; Damien Tanner; Jamie Taylor; Ethan Jones; James Geddes; Ed Chalstrey
+    \item Year: 2020
+    \item Link/Source: \href{https://doi.org/10.1038/s41597-020-00739-0}{10.1038/s41597-020-00739-0} | 
+    \href{https://zenodo.org/records/4059881}{PV Labels} |
+    \href{https://github.com/openclimatefix/solar-power-mapping-data}{Code Repo}
+    \item Main objective of the paper: To create an open geographic data source for solar PV, suitable for intra-nation (UK in this case) analysis using machine vision and PV forecasting. 
+    \item Methodology used: OpenStreetMap, Crowdsourcing, deduplication via spatial clustering
+    \item Number of annotations: over 260,000 (over 255K separate installations; 1067 large solar farms )
+    \item Date range for annotations: Data was collected up to September 2020 
+    \item Annotation locations: United Kingdom
+    \item Key findings or contributions: It includes a large number of small-scale domestic installations, which were typically poorly documented. 
+    Provides detailed metadata and location geometries. 
+    Discusses challenges of data reconciliation and deduplication which is relevant to our work that will merge multiple datasets.
+    Includes a GUI for data visualization and validation which will likely be relevant or useful for our work
+\end{itemize}
+
+\subsubsection{2023-US-large-PV-EIA}
+
+\begin{itemize}
+    \item Title: ``Georectified polygon database of ground-mounted large-scale solar photovoltaic sites in the United States''
+    \item Authors: K. Sydny Fujita; Zachary H. Ancona; Louisa A. Kramer; Mary Straka; Tandie E. Gautreau; Dana Robson; Chris Garrity; Ben Hoen; Jay E. Diffendorfer 
+    \item Year: 2023
+    \item Link/Source: \\
+    \href{https://doi.org/10.1038/s41597-023-02644-8}{10.1038/s41597-023-02644-8} | 
+    \href{https://www.sciencebase.gov/catalog/item/6671c479d34e84915adb7536}{PV annotations} 
+    \item Main objective of the paper: To develop a comprehensive, publicly available georectified dataset of ground-mounted 
+    large-scale solar photovoltaic (LSPV) facilities in the US. 
+    \item Methodology used: Georectification of PV facility coordinates from EIA data. 
+    Used high-resolution aerial imagery to validate facilities and digitize location polygon. 
+    QA/QC by human annotators. Facility metadata was attached to geometries. 
+    \item Number of annotations: 3,699 ground-mounted LSPV facilities
+    \item Date range for annotations: Vector geometries with no attached imagery. Facilities became operational between 2018 and 2023. 
+    \item Annotation locations: Continental USA
+    \item Key findings or contributions: N/A
+\end{itemize}
+
+% \begin{itemize}
+%     \item Title: 
+%     \item Authors:
+%     \item Year:
+%     \item Link/Source:
+%     \item Main objective of the paper:
+%     \item Methodology used:
+%     \item Number of annotations:
+%     \item Date range for annotations:
+%     \item Annotation locations:
+%     \item Key findings or contributions:
+% \end{itemize}
+
+
+% \subsection{Year-Short title [cite]}
+% For Each Paper make a subsetion: containing:
+% \begin{itemize}
+%     \item Title
+%     \item Authors
+%     \item Year
+%     \item Link/Source
+%     \item Main objective of the paper: 
+%     \item Methodology used: (theoretical, experimental, simulation, literature review, etc.)
+%     \item Key findings or contributions
+% \end{itemize}
+% \lipsum[1][10]
+
+
+\subsection{2024-LSTM, Sepsis, PPG\cite{alvarez2024lstm}}
+Example of the subsection title: ``2024 LSTM, Sepsis, PPG'', which is a shortened version of: ``2024 LSTM Model for Sepsis Detection and Classification Using PPG Signals.''
+
+\azul{In this report, each paper must fit within one page! I know that reviewing a paper could take more space, but for that, use a separate document.}
+
+ I intentionally use \azul{BLUE} to capture attention, \rojo{RED} for negative or unexpected results/data, and \verd{GREEN} for positive ones.
+
+\subsection{20xx ASDF}
+A monthly report usually includes three news articles. Two is acceptable, four is good, and more than six is excellent.
+% \end{multicols}

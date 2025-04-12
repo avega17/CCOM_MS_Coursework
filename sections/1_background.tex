@@ -1,0 +1,119 @@
+\section{Background}
+
+\begin{multicols}{2}
+\subsection{Problem Statement and Motivation} 
+% Brief description of the problem, objectives, methodology, and main findings. Less than 500 words.
+% emphasize the distinction between energy source replacement and badly labeled "energy transition" which has never ocurred historically and instead new energy sources have always been added to the energy mix
+The global response to climate change requires our civilization to implement a rapid transition to renewable energy sources in an effort to 
+decarbonize the energy sector as much as possible. The fastest growing renewable energy source is by far \textit{photovoltaic} (PV) solar energy. Growing at over 41\% per year since 2009\cite{kruitwagen_global_inventory_pv_units_2021},
+PV solar energy has far outpaced other renewable energy sources such as concentrated solar power (CSP), hydroelectric storage, geothermal energy, and, to a lesser extent, wind energy. 
+% include figure for rapidly decreasing cost of PV energy and related battery storage technologies
+This rapid growth has led to significant progress in international development goals such as the United Nations Sustainable Development Goals (SDG) which, among other things, 
+addresses the population level needs for clean and affordable energy, and actions to tackle climate change and its impacts\cite{maxar_germany_pv_dataset}. 
+
+Historically, one of the most effective means to ensure global cooperation and uniform implementation of environmental and energy policies has been through the establishment of multi-lateral international agreements such as the Montreal Protocol, the Kyoto Protocol, and, most recently, the Paris Climate Accords signed by (add figure of \% of countries signed and ref) countries. This agreement resulted in \textit{non-binding} commitments to reduce greenhouse gas emissions and goals to 
+limit global warming to 1.5 - 2.0 degrees Celsius above pre-industrial levels. Notably, 87\% of these Nationally Determined Contributions (NDCs) aim to increase the share of renewable energy in their energy mix with half specifying empirical generation figures\cite{robinson_ms_planet_global_renewables_watch_2025}. To maintain any semblance of international accountability to these commitments, these NDCs require extensive and accurate monitoring and validation of any expansion of renewable energy infrastructure. 
+
+To address this \textit{international policy problem} there has been a variety of efforts to assess the progress of each renewable energy source leading to recurring reports, inventories, assessments, and databases at the global, regional, and national levels. Many of these efforts prove insufficient due to only providing aggregated summaries or statistical extrapolations at the national level (IRENA, IEA, BP), or being limited to specific regions (e.g. Europe, North America, China). Particularly in the case of PV solar energy, there has been very significant progress over the last decade in the development of remote sensing and deep learning methods to assess the distribution of PV solar energy at the site, regional, and global levels (cite the many PV assessment papers).
+Most recently, a collaboration between Microsoft, the Nature Conservancy, and Planet Labs has produced \textit{``Global Renewables Watch''}, a public dataset of industrial, commercial, and utility-scale PV solar energy and wind energy installations
+showcasing the potential of using high-resolution satellite imagery and deep learning methods to assess the distribution of renewable energy infrastructure at the planetary scale. 
+
+However, for some countries, land comes at a premium and concentrated large-scale solar energy installations are either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts.
+This leads to countries where distributed, small-scale rooftop or building-integrated PV solar energy installations make up a significant portion of the total installed capacity which is not captured in assessment limited to large-scale installations 
+($\ge$ 10KW or area-figure-threshold) \cite{robinson_ms_planet_global_renewables_watch_2025}\cite{kruitwagen_global_inventory_pv_units_2021}. Additionally, in the case of intermittent renewable energy sources, there is a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale. 
+
+The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that supply and demand are balanced. PV solar energy is particularly dependent on local weather conditions and received solar irradiance which can both be monitored using 
+remote sensing methods and local weather stations. There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
+the use of spectral reflectance features in Computer Vision (CV) models for PV solar array detection\cite{He_universal_pv_spectral_index_2024}, and advances in spatio-temporal data fusion methods to improve the temporal resolution of very-high-resolution (VHR) satellite imagery\cite{Tremenbert_Kasmi_pyPV_roof_2023}. 
+
+This project looks to outline the work required to address these interconnected challenges by tackling two core subproblems leveraging remote sensing data and advances in deep learning methods:
+
+\subsubsection{[CCOM6120] Subproblem 1:}
+    \textbf{Computer Vision detection and assessment of distributed rooftop PV Systems} 
+    % \vspace{0.1cm}
+
+    The first fundamental challenge lies in the automated, accurate, and scalable identification and geometric characterization of distributed rooftop PV panels using very-high-resolution (VHR) multispectral satellite imagery. 
+    Generating reliable, up-to-date inventories of these small, dispersed assets is crucial for granular PV potential assessments\cite{Pueblas_workflow_rooftop_PV_assessment_sat_img_2023}\cite{Jiang_rooftop_pv_assessment_2022}, infrastructure planning, 
+    monitoring deployment rates against policy goals\cite{de-Hoog_sota_survey_2020}, and producing the georeferenced geometry data required for accurate site-level solar irradiance forecasting and PV energy generation estimates\cite{Bansal_ssl_nowcasting_2022}.
+    \vfill\null
+    \columnbreak
+    
+\subsubsection{[CCOM6050] Subproblem 2:} 
+    \textbf{Remote Sensing data fusion for Solar Irradiance time series forecasting} 
+    % \vspace{0.5cm}
+
+    The second major challenge is generating high-spatiotemporal-resolution surface reflectance time series through the fusion of multispectral satellite data from sensors with complementary remote sensing characteristics: 
+    \begin{itemize}
+        \item \textbf{Fine spatial} ($\le10m$) but \textbf{coarse temporal} (days or weeks) resolution: \\
+        While VHR imagery provides spatial detail, its infrequent revisit limits its use for monitoring dynamic processes like cloud cover, which governs solar irradiance variability (cite and rephrase). 
+        \item \textbf{Coarse spatial} ($\ge100m$) but \textbf{fine temporal} (mins. or hr.) resolution: \\
+        Conversely, geostationary (e.g., GOES-R) or wide-swath polar-orbiting satellites (e.g., MODIS, Sentinel-3) offer high temporal frequency but lack the spatial resolution needed for site-specific analysis of distributed PV. 
+    \end{itemize}
+    % \vfill\null
+    % \columnbreak
+
+\subsection{Preliminaries}
+
+\subsubsection{Remote Sensing and Geospatial Data}
+
+Remote sensing (RS) refers to the process of acquiring images and data of the planet’s surface using a variety of remote sensors in satellite and aerial vehicles (add citations from my prev paper). 
+These sensors analyze electromagnetic radiation reflected or emitted from objects on the Earth’s surface, which is then processed to extract information about the objects and their properties. 
+Besides traditional electro-optical (ie panchromatic and 3-channel RGB images (cite)) modern RS employs a variety of sensors and modalities such as multispectral 
+(four or more non-overlapping bands in the electromagnetic spectrum), hyperspectral (more than 100 narrow bands), and even active sensors such as microwave altimeters or Synthetic
+Aperture Radar (SAR) that emit their own radiation and measure the reflected signal to ”see” at night and through atmospheric obstructions like clouds and fog (cite myself or refs from prev paper). 
+Analysis of source data from these remote sensors must handle a variety of nuanced characteristics of each sensor and the produced data. For our purposes and the scope of this report, we will limit our discussion
+to the following characteristics: 
+
+\begin{itemize}
+    \item Spatial resolution: The level of detail in an image, typically measured in meters per pixel.
+    \item Spectral resolution: The ability of a sensor to distinguish between different wavelengths of light.
+    \item Temporal resolution: The frequency at which a sensor captures data over the same location.
+    \item Radiometric resolution: The sensitivity of a sensor to detect variations in intensity, often represented by bit depth.
+    \item Earth Observation (EO) data types:
+        \begin{enumerate}
+            \item Raster data: Gridded data representing continuous surfaces.
+            \item Vector data: Discrete data represented as points, lines, or polygons.
+            \item Time series data: Sequential data capturing changes over time.
+            \item Geospatial data cubes: Multidimensional arrays combining spatial, temporal, and spectral dimensions.
+        \end{enumerate}
+\end{itemize}
+
+A fundamental challenge in RS is the tradeoff that a sensor's orbit and design must make between spatial, spectral, and temporal resolution. 
+
+\subsubsection{Computer Vision}
+
+Computer Vision (CV) is a subfield of Artificial Intelligence and a discipline that deals with the problem of interpreting and extracting meaningful information from images (cite myself or refs from prev paper) 
+in a manner similar to human vision. This field has seen significant advancements in recent years, particularly with the rise of deep learning methods and the spread of large, labeled datasets for many applications. 
+RS and EO has seen an explosion of interest, publications, and datasets for DL methods since 2015 (cite EO paper from cloud computing course). Relevant CV tasks for our purposes include:
+
+\begin{enumerate}
+    \item Object Detection: Identifying and localizing specific object classes (e.g., PV panels) within an image with (georeferenced, in our case) bounding boxes.
+    \item Semantic Segmentation: Classifying each pixel in an image into predefined categories (e.g., PV panel array, rooftop, vegetation, background).
+    \item Instance Segmentation: Similar to semantic segmentation, but differentiates between \textit{individual} instances (e.g., distinguishing between different PV panel arrays). 
+\end{enumerate}
+
+Some relevant CV architectures include Convolutional Neural Networks (CNNs), Vision Transformers (ViTs), Generative Adversarial Networks (GANs), and CNN-Transformer hybrids. (detail in later draft...)
+
+\subsubsection{Data Fusion}
+
+\begin{enumerate}
+    \item Definition: combining data from multiple sources to achieve improved information quality or inference compared to using sources individually\cite{Castanedo_trad_data_fusion_2013} 
+    \item (Geospatial) Coherence\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}
+    \item Remote Sensing Fusion types\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}\cite{Li_DL_multimodal_RS_data_fusion_review_2022}
+    \begin{itemize}
+        \item Spatio-Spectral Fusion: Enhancing spectral resolution using spatial information (e.g., Pansharpening) or vice versa.\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}\cite{Zhang_panchromatic_and_msi_fusion_for_RS_and_EO_2023}
+        \item Spatio-Temporal Fusion: Combining high spatial resolution/low temporal frequency data with low spatial resolution/high temporal frequency data to generate a fused dataset with 
+        high resolution in both domains.\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019} \textbf{This is the core fusion type for the second subproblem of this project}. 
+    \end{itemize}
+    \item Data Fusion Abstraction Levels\cite{Hussain_DL_Data_Fusion_review_2024}
+    \begin{itemize}
+        \item Early fusion (pixel/signal level): Combining raw sensor data directly 
+        \item Intermediate fusion (feature level): Extracting relevant features from each sensor first and then combining them
+        \item Late fusion (symbol/decision level): Each source produces an independent decision, which is then combined to produce a final output
+        % \item Hybrid fusion (combination of levels)
+    \end{itemize}
+    \item  A review from Castanedo\cite{Castanedo_trad_data_fusion_2013} also categorizes fusion based on the relationship between data sources (complementary, redundant, cooperative)
+    \item The rise of Deep Learning (DL) has significantly impacted the field, with reviews listing CNNs, LSTMs, GANs, and Transformers as the most relevant architectures for data fusion\cite{Li_DL_multimodal_RS_data_fusion_review_2022}\cite{Hussain_DL_Data_Fusion_review_2024}.
+\end{enumerate}
+
+\end{multicols}

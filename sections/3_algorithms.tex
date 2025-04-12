@@ -1,0 +1,59 @@
+{\color{gray}\hrule}
+\begin{center}
+\section{[CCOM6050] Data Fusion Algorithms}
+\textbf{Here we will go into more detail and implement one traditional data fusion algorithm and another using Deep Learning methodology.}
+\bigskip
+\end{center}
+{\color{gray}\hrule}
+
+\begin{multicols}{2}
+
+\subsection{Algorithm Design}
+% \lipsum[1][10-15]
+
+\subsubsection{Statistical STF algorithm candidates}
+(add citations)
+
+\begin{itemize}
+    \item Weight Function-based methods
+        \begin{enumerate}
+            \item STARFM (Spatial and Temporal Adaptive Reflectance Fusion Model): \\
+            One of the earliest and most widely used methods. It assumes land cover change is minimal between image acquisition dates  
+            (ok for our application) and uses spectral similarity and spatial distance to weight contributions from known fine-resolution 
+            pixels to predict reflectance for dates where only coarse imagery is available. 
+            \item ESTARFM (Enhanced STARFM): \\
+            An extension of STARFM designed to perform better in heterogeneous landscapes by considering spectral unmixing concepts implicitly 
+            and using conversion coefficients derived from two fine/coarse image pairs before and after the desired prediction date. 
+        \end{enumerate}
+    \item Unmixing-based methods
+        \begin{enumerate}
+            \item STDFA (Spatio-Temporal Data Fusion Approach): \\
+            Combines spectral unmixing and spatial interpolation to predict fine-resolution reflectance. 
+        \end{enumerate}
+    \item Regression-based methods
+\end{itemize}
+
+\subsubsection{Deep Learning STF algorithm candidates}
+\begin{itemize}
+    \item CNN-based methods
+    \item GAN-based methods
+\end{itemize}
+
+\subsection{Implementation}
+(add links to colab jupyter notebooks) \\
+(add essential code excerpts to highlight algorithm details)
+
+\subsection{Complexity Analysis}
+
+\begin{itemize}
+    \item CV factors: image size, number of bands, number of samples
+    \item DL factors: number of layers, batch size, number of epochs, fp weight size
+    \item non-DL factors: window size, other parameters 
+    \item Big O notation
+    \item Running time 
+    \item Memory usage
+\end{itemize}
+
+\end{multicols}
+
+\clearpage
