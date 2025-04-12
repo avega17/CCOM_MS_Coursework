@@ -1,0 +1,48 @@
+name: Compile Latest LaTeX Report
+
+on:
+  push:
+    # important: update list if Overleaf syncs to a different branch
+    branches: [main] 
+    # only run when relevant .tex files are changed
+    paths: 
+      - '*.tex' # capture main.tex in root directory
+      - 'assets/report/src/sections/*.tex'
+      - 'assets/report/src/bibliography/*.bib'
+      - 'assets/report/src/figures/*' # update if new figures are added
+    workflow_dispatch: # allows manual triggering in GH Actions UI
+
+jobs:
+  compile_latest_latex:
+    runs-on: ubuntu-latest
+    permissions:
+      # Grants the workflow write permission to commit and push the new file to the repo
+      contents: write
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with: 
+          repository: avega17/CCOM_MS_Spring_2025_EO_PV_research
+          # uses token automatically created during each workflow run
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          compiler: pdflatex # or lualatex, xelatex
+          # args: "-synctex=1 -interaction=nonstopmode -file-line-error -pdf" # Default args
+      
+          # assuming the required assets subdir exists as the source code is located there
+      - name: Move PDF to assets
+        run: mv main.pdf report/asvn_eo_cv_pv_report.pdf
+
+      - name: Commit and push generated PDF
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automated LaTeX build: compile latest pdf report"
+          # skip since the repo is already checked out
+          skip_fetch: true    
+          skip_checkout: true
+          file_pattern: report/*_report.pdf

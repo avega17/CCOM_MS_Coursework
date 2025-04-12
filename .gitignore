@@ -1,0 +1,10 @@
+# you shouldn't commit these into source control
+# some dbt dirs
+target/
+dbt_packages/
+logs/
+package-lock.yml
+.DS_Store
+# vscode extensions
+extensions.json
+.vscode/
