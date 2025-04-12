@@ -66,28 +66,31 @@ CCOM 6050: Final Project -- Midterm Project Report
 \medskip
 \normalsize
 \end{center}
-{\color{gray}\hrule}
-\vspace{0.4cm}
+{\color{gray}\hrule} 
+\vspace{0.4cm} 
 
 \tableofcontents
 \hfill
 \clearpage
 
-\input{./sections/0_introduction.tex}
+% Define path prefixes
+\newcommand{\reportpath}{./assets/report/src}
+
+\input{\reportpath/sections/0_introduction.tex}
 {\color{gray}\hrule}
 \clearpage
-\input{./sections/1_background.tex}
+\input{\reportpath/sections/1_background.tex}
 {\color{gray}\hrule}
 \medskip
-\input{./sections/2_methodology.tex}
-\input{./sections/3_algorithms.tex}
-\input{./sections/4_review.tex}
-% \input{./sections/3_section.tex} % in case you need it
-% \input{./sections/4_section.tex} % in case you need it
-\input{./sections/5_conclusion.tex}
+\input{\reportpath/sections/2_methodology.tex}
+\input{\reportpath/sections/3_algorithms.tex}
+\input{\reportpath/sections/4_review.tex}
+% \input{\sectionspath/3_section.tex} % in case you need it
+% \input{\sectionspath/4_section.tex} % in case you need it
+\input{\reportpath/sections/5_conclusion.tex}
 \clearpage
 \bibliographystyle{plain}
-\bibliography{references}
+\bibliography{\reportpath/sections/references}
 \end{document}
 
 % Alejandro Vega, estudiante de MS en CCOM, estamos trabajando sobre "Self-Supervised Learning for Enhancing Multimodal Earth Observation Data Analysis".  % March 07, 2025
