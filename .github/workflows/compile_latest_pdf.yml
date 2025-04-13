@@ -30,11 +30,13 @@ jobs:
       - name: Compile LaTeX
         uses: xu-cheng/latex-action@v3
         with:
+          texlive_version: 2024
           root_file: main.tex
           compiler: pdflatex # or lualatex, xelatex
           # args: "-synctex=1 -interaction=nonstopmode -file-line-error -pdf" # Default args
-      
-          # assuming the required assets subdir exists as the source code is located there
+          extra_system_packages: 
+
+        # assuming the required assets subdir exists as the source code is located there
       - name: Move PDF to assets
         run: mv main.pdf report/asvn_eo_cv_pv_report.pdf
 
