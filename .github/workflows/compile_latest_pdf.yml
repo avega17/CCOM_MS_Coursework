@@ -7,9 +7,9 @@ on:
     # only run when relevant .tex files are changed
     paths: 
       - '*.tex' # capture main.tex in root directory
-      - 'assets/report/src/sections/*.tex'
-      - 'assets/report/src/bibliography/*.bib'
-      - 'assets/report/src/figures/*' # update if new figures are added
+      - 'report/src/sections/*.tex'
+      - 'report/src/bibliography/*.bib'
+      - 'report/src/figures/*' # update if new figures are added
     workflow_dispatch: # allows manual triggering in GH Actions UI
 
 jobs:
