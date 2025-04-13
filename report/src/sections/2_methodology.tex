@@ -28,38 +28,49 @@ Create a subsection for each part described in the methodology. These subsection
 \subsection{Implementation Details}
 \subsubsection{Python Libraries and other software}
 \begin{itemize}
-    \item \textbf{Python 3.10} - programming language
-    \item \textbf{PyTorch 2.0} - deep learning framework
-    \item \textbf{jupyterlab} - web-based interactive development environment for Jupyter notebooks
-    \item \textbf{numpy + xarray} - N-dimensional array processing
-    \item \textbf{Geopandas} - Geospatial data manipulation and analysis
-    \item \textbf{Rasterio} - Raster data reading and writing
-    \item \textbf{GDAL} - Geospatial data abstraction library
-    \item \textbf{mamba} - a faster alternative to the conda python package manager
-    \item \textbf{rastervision} - a framework for computer vision and deep learning in remote sensing
-    \item \textbf{PyTorch Lightning} - a lightweight wrapper for PyTorch to help with training and testing
-    \item \textbf{TorchGeo} - a library for deep learning on geospatial data which includes datasets and pretrained models
+    \item \textit{Python 3.10} - programming language  
+    \item \textit{PyTorch 2.0} - deep learning framework  
+    \item \textit{jupyterlab} - web-based interactive development environment for Jupyter notebooks
+    \item \textit{numpy + xarray} - array processing
+    \item \textit{Geopandas} - Geospatial data manipulation and analysis
+    \item \textit{duckdb} - an in-process SQL OLAP database management system
+    \item \textit{cubo} - a library for working with cuboids (3D arrays) in Python
+    \item \textit{openeo} - python client for the OpenEO API
+    \item \textit{Rasterio} - Raster data reading and writing
+    \item \textit{GDAL} - Geospatial data abstraction library
+    \item \textit{mamba} - a faster alternative to the conda package manager
+    \item \textit{rastervision} - a framework for computer vision and deep learning in remote sensing
+    \item \textit{PyTorch Lightning} - a lightweight wrapper for PyTorch to help with training and testing
+    \item \textit{TorchGeo} - a library for deep learning on geospatial data which includes datasets and pretrained models
+    \item \textit{super-gradients} - a library for transfer learning and training of SOTA CV models
+    \item \textit{data-gradients} - a library designed for computer vision dataset analysis and visualization
+    \item \textit{torchmetrics} - a library for computing metrics in PyTorch
 \end{itemize}
 
 \subsubsection{Hardware and Compute Resources}
 \subsubsection{Code Repository}
-link placeholder
+
+At the end of the semester, the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_research}{private Github repo} where this report and associated code is hosted will be made public.
 
 \subsection{Evaluation}
     \begin{itemize}
         \item Goal(s): Assess accuracy of reconstructed time series 
-        \item Metrics:
+        \item Metrics (including their normalized versions):
         \begin{itemize}
             \item RMSE (Root Mean Square Error)
             \item MAE (Mean Absolute Error)
+            \item MAPE (Mean Absolute Percentage Error)
+            \item MBD (Mean Bias Deviation)
             \item R2 (Coefficient of Determination)
             \item PSNR (Peak Signal-to-Noise Ratio)
-            \item Spectral Angle Mapper (SAM)
-            \item ERGAS (Relative Geometric Accuracy)
-            \item UIQI (Universal Image Quality Index)
+            \item 
             % validate which are useful for STF 
         \end{itemize}
-        \item Baseline 
+        \item Baseline(s):
+            \begin{itemize}
+                \item Persistence model 
+                \item Clear sky components
+            \end{itemize}
     \end{itemize}
 
 \subsection{Results}
