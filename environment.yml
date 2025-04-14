@@ -1,0 +1,55 @@
+name: eo-pv-cv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.10
+  - pip
+  - numpy
+  - matplotlib
+  - lightning
+  - geopandas
+  - gdal
+  - geopandas
+  - rasterio
+  - shapely
+  - rsgislib
+  - contextily
+  - overturemaps
+  # narrow down geospatial viz libraries to avoid unnecessary dependencies
+  - ipyleaflet
+  - lonboard
+  # - folium
+  - pydeck
+  # - cartopy
+  - easystac
+  - esda 
+  - cubo
+  - pip:
+    # TODO: freeze versions once everything works
+      - jupyterlab
+      - python-dotenv
+      - tqdm
+      - ipywidgets
+      - xarray
+      # placing here since conda version is VERY outdated
+      - pygeohash
+      - duckdb
+      # - geoarrow-pyarrow
+      # - geoarrow-pandas
+      - stac-geoparquet
+      - openeo
+      - datahugger
+      - sciencebasepy
+      # not available in pypi yet
+      # - "git+https://github.com/Open-Earth-Monitor/zen#egg=zen" 
+      # - zenodo_get
+      - torch >=2.0.0
+      - torchvision
+      - torchgeo
+      - torchmetrics
+      - rastervision
+      # from DeciAI
+      - data-gradients
+      - super-gradients
+  

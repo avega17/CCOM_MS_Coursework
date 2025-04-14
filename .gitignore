@@ -8,3 +8,5 @@ package-lock.yml
 # vscode extensions
 extensions.json
 .vscode/
+# data assets
+datasets/*
