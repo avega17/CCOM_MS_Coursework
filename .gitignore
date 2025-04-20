@@ -5,6 +5,7 @@ dbt_packages/
 logs/
 package-lock.yml
 .DS_Store
+.env
 # vscode extensions
 extensions.json
 .vscode/
