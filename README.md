@@ -1,16 +1,15 @@
 # Remote Sensing Assessment and Monitoring of Distributed Rooftop Solar Panel Arrays
 
 Here we present the source, technical report, and artifacts/deliverables for our
-initial investigation and review of Computer Vision and Remote Sensing methods for the
-detection of Photovoltaic (PV) solar panels (with a particular focus on rooftop
-installations) and the forecasting and modeling of their short-term energy
-production using Multispectral satellite imagery with very high spatial-resolution
-(< 1m/pixel), and geostationary satellite sensors with very high temporal-resolution
-(scans every 5-15 minutes), respectively.
-This repo, report, and several of the notebooks also serve as deliverables
-for the courses CCOM6102: Computer Vision and CCOM6050: Design & Analysis of Algorithms
-where we explore two constituent subproblems for the project as part of the
-following courses:
+initial investigation and review of Computer Vision and Remote Sensing methods for:
+1. detecting of Photovoltaic (PV) solar panels (particularly rooftop
+installations) using Multispectral Satellite Imagery (MSI) with very high spatial-resolution
+(< 1m/pixel in the case of [Maxar's entire constellation](https://www.maxar.com/maxar-intelligence/constellation))
+2. using Data Products from MSI from Geostationary sensors with very high temporal-resolution
+(e.g. scans every 5-15 minutes for NOAA GOES-R series)
+
+This repo, included report [synced from Overleaf](https://www.overleaf.com/learn/how-to/GitHub_Synchronization), and several of the notebooks also serve as deliverables for the courses *CCOM6102: Computer Vision* and *CCOM6050: Design & Analysis of Algorithms*
+where we explore two constituent subproblems for the project as part of the two courses:
 
 ## Computer Vision:
 
@@ -65,6 +64,7 @@ See usage of `python-dotenv` [here](https://www.geeksforgeeks.org/using-python-e
 - [torchvision](https://pytorch.org/vision/stable/index.html) for datasets, models, and transforms
 - - [pytorch lightning](https://lightning.ai/docs/pytorch/stable/starter/introduction.html) for agile development and iteration, and enabling scaling 
 - IBM's [terratorch](https://ibm.github.io/terratorch/architecture/) for use of Geospatial Foundation Models (GFMs) as baselines AND models to be fine-tuned
+- [overture maps](https://docs.overturemaps.org/guides/buildings/#14/32.58453/-117.05154/0/60) for use in inferencing over rooftops 
 - dbt core
 - duckdb
 - GDAL
