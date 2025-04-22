@@ -1,6 +1,6 @@
-# rename to .env
 DATA_PATH="datasets"
 MAX_LABEL_MB=300
-PV_DB_FILE="datasets/pv_inventory.db"
-NREL_API_KEY=""
-NREL_API_EMAIL=""
+GEOM_OVERLAP_THRESHOLD=0.8
+PV_DB_FILE="datasets/prepared/labels/pv_inventory.db"
+# NREL_API_KEY=""
+# NREL_API_EMAIL=""

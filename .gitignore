@@ -11,3 +11,5 @@ extensions.json
 .vscode/
 # data assets
 datasets/*
+# temprarily hiding while I sort out dbt-core usage and details
+profile.yml

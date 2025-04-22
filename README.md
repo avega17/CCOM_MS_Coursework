@@ -26,14 +26,47 @@ monitoring deployment rates against policy goals, and producing the georeference
 
 ## Design & Analysis of Algorithms
 
-### Spatio-temporal Data Fusion for Solar Irradiance Time Series Forecasting
+### Data Fusion of EO imagery and spatio-temporal context applied to Solar Irradiance Time Series Forecasting 
+
+Details TBD. See main reference, ["SolarCube: An Integrative Benchmark Dataset Harnessing Satellite and In-situ Observations for Large-scale Solar Energy Forecasting"](https://proceedings.neurips.cc/paper_files/paper/2024/hash/06477eb61ea6b85c6608d42a222462df-Abstract-Datasets_and_Benchmarks_Track.html), NeurIPS 2024 and their [corresponding repo](https://github.com/Ruohan-Li/SolarCube).
+
+Coursework will likely be limited to testing clear sky and similar solar irradiance estimation techniques, and comparing their running time, and space and time complexity to 
+the authors proposed Deep Learning based approach with much of the data and code taken as-is due to time constraints.
+
+See their figure 1 below for a high-level overview of the dataset and tasks:
+
+<figure style="text-align: center">
+<img src="https://raw.githubusercontent.com/Ruohan-Li/SolarCube/master/images/final2.png" style="width:80%; height:auto;">
+<figcaption align = "center"> SolarCube dataset composition, study areas, and baseline tasks  </figcaption>
+</figure>
+
+## Setup and Installation
+### Conda 
+Install [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) or [mamba](https://github.com/conda-forge/miniforge) (["a drop-in replacement for Conda that is generally faster and better at resolving dependencies"](https://statistics.berkeley.edu/computing/conda)) and create a new environment with the following command:
+```bash
+conda env create -f environment.yml
+```
+This environment has been tested on two different machines, but both are macOS ARM64 machines. Other OS and architectures are untested with the frozen versions listed in the environment.yml file.
+Feel free to loosen or remove the version constraints in the environment.yml file if you encounter any issues with package installation and dependency resolution.
+
+### Environment Variables and (future) API Keys
+For the notebooks to run *as-is* you also need to create a .env file with the variables that are *not* commented out in the `env-template.txt` included in this repo for convenience.
+Getting the notebook running with the default paths and variables is as simple as renaming the included env template file:
+```bash
+mv env-template.txt .env
+```
+Then, fill in the variables with your own values as needed. The variables are used to set up where data will be stored locally, the database connection file, and other environment variables.
+See usage of `python-dotenv` [here](https://www.geeksforgeeks.org/using-python-environment-variables-with-python-dotenv/).
 
 ## Tools
 - jupyter notebook/lab
 - ipywidgets
+- [torchgeo](https://www.osgeo.org/projects/torchgeo/) for datasets, geospatial data loaders, and transforms
+- [torchvision](https://pytorch.org/vision/stable/index.html) for datasets, models, and transforms
+- - [pytorch lightning](https://lightning.ai/docs/pytorch/stable/starter/introduction.html) for agile development and iteration, and enabling scaling 
+- IBM's [terratorch](https://ibm.github.io/terratorch/architecture/) for use of Geospatial Foundation Models (GFMs) as baselines AND models to be fine-tuned
 - dbt core
 - duckdb
-- pytorch lightning
 - GDAL
 - rasterio
 - geopandas
@@ -42,4 +75,4 @@ monitoring deployment rates against policy goals, and producing the georeference
 - open data cube
 - xarray
 - cubo
-- one of: ipyleaflet, folium, lonboard, or pydeck for visualization
+- visualizations using one or more of: ipyleaflet, folium, lonboard, or pydeck for visualization

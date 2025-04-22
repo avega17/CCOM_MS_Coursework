@@ -359,6 +359,7 @@ dependencies:
       - data-gradients==0.3.2
       - datahugger==0.13
       - dbt-core==1.9.4
+      - dbt-duckdb
       - docstring-parser==0.16
       - docutils==0.17.1
       - duckdb==1.2.2
