@@ -14,7 +14,7 @@ following courses:
 
 ## Computer Vision:
 
-### Detection and assessment of distributed rooftop PV Systems using 
+### Detection and assessment of distributed rooftop PV Systems using High-Resolution Multispectral Satellite Imagery
 
 The first fundamental challenge lies in the automated, accurate, and scalable identification and geometric characterization
 of distributed rooftop PV panels using very-high-resolution (VHR) multispectral satellite imagery.
@@ -26,7 +26,7 @@ monitoring deployment rates against policy goals, and producing the georeference
 
 ## Design & Analysis of Algorithms
 
-### Data Fusion of EO imagery and spatio-temporal context applied to Solar Irradiance Time Series Forecasting 
+### Data Fusion of EO imagery with high-temporal resolution and spatio-temporal for Solar Irradiance Time Series Forecasting 
 
 Details TBD. See main reference, ["SolarCube: An Integrative Benchmark Dataset Harnessing Satellite and In-situ Observations for Large-scale Solar Energy Forecasting"](https://proceedings.neurips.cc/paper_files/paper/2024/hash/06477eb61ea6b85c6608d42a222462df-Abstract-Datasets_and_Benchmarks_Track.html), NeurIPS 2024 and their [corresponding repo](https://github.com/Ruohan-Li/SolarCube).
 
@@ -127,22 +127,23 @@ There are several medium resolution and high resolution EO imagery collections, 
 <!-- - [European Space Agency (ESA) Open Science Catalog](https://stacindex.org/catalogs/osc#/) -->
 <!-- - [NASA's Common Metadata Repository STAC](https://stacindex.org/catalogs/cmr-stac#/) -->
 
-## Geostationary or Weather-satellites with high-temporal resolution EO imagery via STAC collections
+## Geostationary or Weath high-temporal resolution EO imagery via STAC collections
 
 - JMA Himawari 8/9 [collection on AWS](https://registry.opendata.aws/noaa-himawari/)
-- NOAA Global Mosaic of Geostationary Satellite Imagery (GMGSI) [AWS STAC collection](https://registry.opendata.aws/noaa-gmgsi/)
-    - "composited from data from several geostationary satellites orbiting the globe, including the GOES-East and GOES-West Satellites operated by U.S. NOAA/NESDIS, the Meteosat-10 and Meteosat-9 satellites from theMeteosat Second Generation (MSG) series of satellites operated by European Organization for the Exploitation of Meteorological Satellites (EUMETSAT), and the Himawari-9 satellite operated by the Japan Meteorological Agency (JMA)"
-    - "GMGSI composite images have an approximate 8 km (5 mile) horizontal resolution and are **updated every hour**"
-- NOAA's [AWS registry](https://registry.opendata.aws/noaa-goes/) for GOES 16, 17, 18, and (new!) 19
-    - "GOES satellites provide continuous weather imagery and monitoring of meteorological and space environment data across North America. GOES satellites provide the kind of continuous monitoring necessary for intensive data analysis. They hover continuously over one position on the surface. The satellites orbit high enough to allow for a full-disc view of the Earth. Because they stay above a fixed spot on the surface, they provide a constant vigil" 
+- 
 
-## Spatio-temporal context data
-This covers solar irradiance, temperature, metereological data, administrative boundaries, building vector datasets (for urban inference) etc.
+## Spatio-temporal context data (solar irradiance, temperature, metereological data, etc.)
 
 - NREL NSRDB (National Renewable Energy Laboratory's National Solar Radiation Database) via [AWS STAC collection](https://registry.opendata.aws/nrel-pds-nsrdb/)
     - "a serially complete collection of hourly and half-hourly values of the three most common measurements of solar radiation – global horizontal, direct normal, and diffuse horizontal irradiance — and meteorological data"
     - see interactive web viewer [here](https://nsrdb.nrel.gov/data-viewer)!
     - *for Puerto Rico*: every 30/60 mins, 4km **from 1998-2019**!!
+    - 
+- NOAA Global Mosaic of Geostationary Satellite Imagery (GMGSI) [AWS STAC collection](https://registry.opendata.aws/noaa-gmgsi/)
+    - "composited from data from several geostationary satellites orbiting the globe, including the GOES-East and GOES-West Satellites operated by U.S. NOAA/NESDIS, the Meteosat-10 and Meteosat-9 satellites from theMeteosat Second Generation (MSG) series of satellites operated by European Organization for the Exploitation of Meteorological Satellites (EUMETSAT), and the Himawari-9 satellite operated by the Japan Meteorological Agency (JMA)"
+    - "GMGSI composite images have an approximate 8 km (5 mile) horizontal resolution and are **updated every hour**"
+- NOAA's [AWS registry](https://registry.opendata.aws/noaa-goes/) for GOES 16, 17, 18, and (new!) 19
+    - "GOES satellites provide continuous weather imagery and monitoring of meteorological and space environment data across North America. GOES satellites provide the kind of continuous monitoring necessary for intensive data analysis. They hover continuously over one position on the surface. The satellites orbit high enough to allow for a full-disc view of the Earth. Because they stay above a fixed spot on the surface, they provide a constant vigil" 
 - NASA Prediction of Worldwide Energy Resources (POWER) [registry on AWS](https://registry.opendata.aws/nasa-power/)
     - "The POWER project contains over 380 satellite-derived meteorology and **solar energy Analysis Ready Data (ARD) at four temporal levels: hourly, daily, monthly, and climatology**. The POWER data archive provides data at the native resolution of the source products. The data is updated nightly to maintain **near real time availability** (2-3 days for meteorological parameters and **5-7 days for solar**). The POWER services catalog consists of a series of RESTful Application Programming Interfaces, geospatial enabled image services, and web mapping Data Access Viewer. These three service offerings support data discovery, access, and distribution to the project’s user base as ARD and as direct application inputs to decision support tools."
 - Department of Energy's Open Energy Data Initiative (OEDI) [Data Lake registry on AWS](https://registry.opendata.aws/oedi-data-lake/)
