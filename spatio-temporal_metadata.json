@@ -1,0 +1,45 @@
+{
+    "h3": {"resolution_sqkm_map": [
+            4,250,546.8477000,
+            607,220.9782429,
+            86,745.8540347,
+            12,392.2648621,
+            1,770.3235517,
+            252.9033645,
+            36.1290521,
+            5.1612932,
+            0.7373276,
+            0.1053325,
+            0.0150475,
+            0.0021496,
+            0.0003071,
+            0.0000439,
+            0.0000063,
+            0.0000009
+    ]}
+    , "overture_divisions_area": {
+        "s3_path": "s3://overturemaps-us-west-2/release/2025-03-19.0/theme=divisions/type=division_area/*.parquet"
+        , "description": "Division areas are polygons that represent the land or maritime area covered by a division. Each division area belongs to a division which it references by ID, and for which the division area provides an area polygon. For ease of use, every division area repeats the subtype, names, country, and region properties of the division it belongs to."
+        , "schema": {
+            "id": "string",
+            "geometry": ["Polygon", "MultiPolygon"],
+            "class": ["land", "maritime"],
+            "is_land": "boolean",
+            "is_territorial": "boolean",
+            "division_id": "string",
+            "country": "string",
+            "region": "string"
+        }
+    },
+    "overture_base_land_cover": {
+        "s3_path": "s3://overturemaps-us-west-2/release/2025-04-23.0/theme=base/type=land_cover/*"
+        , "description": "Our land_cover layer is vectorized data derived from the European Space Agency’s 2020 WorldCover (10m) rasters. It's similar to the land cover layer in the Daylight map distribution, but Overture Maps added higher-resolution data (zoom level 15) with more detail and land cover classes. You'll find 10 subtypes in the new data: snow, forest, urban, grass, crop, barren, wetland, moss, mangrove, and shrub."
+        , "schema": {
+            "id": "string",
+            "geometry": ["Polygon", "MultiPolygon"],
+            "type": {"subtype": "string"},
+            "theme": "string",
+            "type": "string"
+        }
+    }
+}

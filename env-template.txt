@@ -1,7 +1,8 @@
 DATA_PATH="datasets"
 MAX_LABEL_MB=300
 GEOM_OVERLAP_THRESHOLD=0.8
-PV_DB_FILE="datasets/prepared/labels/pv_inventory.db"
+DB_PATH="datasets/databases"
+ZSTD_PARQUET_COMPRESSION_LEVEL=10
 # used to tie our polygon labels to administrative boundaries (region, country, city, etc.)
 OVERTURE_DIVISIONS_S3 = "s3://overturemaps-us-west-2/release/2025-03-19.0/theme=divisions/type=division_area/*.parquet"
 # credentials for Maxar MGP Pro (API Keys are longer lived; accounts are suspended for inactivity)

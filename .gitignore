@@ -13,3 +13,5 @@ extensions.json
 datasets/*
 # temprarily hiding while I sort out dbt-core usage and details
 profile.yml
+*.cpython*
+utils/*.cpython*
