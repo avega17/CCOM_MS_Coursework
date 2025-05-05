@@ -601,6 +601,8 @@ def process_vector_geoms(
     if 'geometry' not in gdf.columns:
         gdf['geometry'] = gdf.geometry
 
+    # TODO: filter out non Polygon/Multi-Polygon geometries
+
     # Basic info about the dataset
     print(f"Loaded geodataframe with raw counts of {len(gdf)} PV installations")
     print(f"Coordinate reference system: {gdf.crs}")
@@ -654,8 +656,10 @@ def process_vector_geoms(
     gdf_proj = gdf.geometry.to_crs(epsg=3857)
     gdf['area_m2'] = gdf_proj.area
     # Add centroid coordinates
-    gdf['centroid_lon'] = gdf.geometry.centroid.x
-    gdf['centroid_lat'] = gdf.geometry.centroid.y
+    gdf['centroid_lon'] = gdf_proj.centroid.x
+    # gdf['centroid_lon'] = gdf.geometry.centroid.x
+    gdf['centroid_lat'] = gdf_proj.centroid.y
+    # gdf['centroid_lat'] = gdf.geometry.centroid.y
 
     print(f"After filtering and cleaning, we have {len(gdf)} PV installations")
 
@@ -812,6 +816,7 @@ def geom_db_consolidate_dataset(
     parquet_files,
     table_name="global_consolidated_pv",
     geom_column="geometry",
+    keep_geoms=["POLYGON", "MULTIPOLYGON"], 
     spatial_index=True,
     out_parquet=None,
     printout=False
@@ -852,6 +857,7 @@ def geom_db_consolidate_dataset(
     conn.execute(f"DROP TABLE IF EXISTS {table_name};")
     
     scans = []
+    excluded_geoms_count = 0
     print(f"Building temp UNION query from {len(parquet_files)} parquet files...")
     
     for path in parquet_files:
@@ -881,6 +887,7 @@ def geom_db_consolidate_dataset(
             uid_expr = "COALESCE(" + ", ".join(present_uids) + ", 'NO_ID_' || ROW_NUMBER() OVER ())"  # Add fallback
 
             # Build SQL query for this file
+            # filter out Point and LineString by default until we have heuristic for extracting meaningful PV polygon label from point
             scan_query = f"""
                 SELECT 
                   sha256(concat_ws('_', {uid_expr}, '{dataset_name}')) AS unified_id,
@@ -892,7 +899,10 @@ def geom_db_consolidate_dataset(
                   bbox, 
                   ST_GeomFromWKB(TRY_CAST({geom_column} AS WKB_BLOB)) AS geometry
                 FROM read_parquet('{str(path)}')
+                WHERE ST_GeometryType(geometry) in ({', '.join([f"'{g}'" for g in keep_geoms])})
             """
+            cnt_query = f"SELECT COUNT(*) FROM read_parquet('{str(path)}') WHERE ST_GeometryType(geometry) not in ({', '.join([f"'{g}'" for g in keep_geoms])});"
+            excluded_geoms_count += conn.execute(cnt_query).fetchone()[0]
             
             scans.append(scan_query)
         except Exception as e:
@@ -926,7 +936,7 @@ def geom_db_consolidate_dataset(
         # replace NaN or NULL values in numeric columns with -1 (to indicate invalid)
         conn.execute(f"UPDATE {table_name} SET spheroid_area = -1.0 WHERE spheroid_area IS NULL OR isnan(spheroid_area);")
         count_tmp = conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
-        print(f"Table '{table_name}' created with raw count (before dedup) of {count_tmp} records.")
+        print(f"Excluded {excluded_geoms_count} geometries that are not of type {', '.join(keep_geoms)}")
         
         if count_tmp == 0:
             print("ERROR: Temporary table is empty after UNION. Check input files and queries.")
@@ -949,7 +959,6 @@ def geom_db_consolidate_dataset(
     
     # Print statistics if requested
     if printout:
-        count_final = conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
         # Area distribution (min, max, avg)
         area_stats = conn.execute(
             f"SELECT MIN(area_m2), MAX(area_m2), AVG(area_m2) FROM {table_name}"
@@ -959,7 +968,7 @@ def geom_db_consolidate_dataset(
             f"SELECT MIN(centroid_lon), MAX(centroid_lon), MIN(centroid_lat), MAX(centroid_lat) FROM {table_name}"
         ).fetchone()
         
-        print(f"Table '{table_name}' contains {count_final} records.")
+        print(f"Table '{table_name}' created with raw count (before dedup) of {count_tmp} records.")
         print(f"Area (m²): min = {area_stats[0]}, max = {area_stats[1]}, avg = {area_stats[2]}")
         print(f"Centroid extent: lon [{bbox[0]}, {bbox[1]}], lat [{bbox[2]}, {bbox[3]}]")
     

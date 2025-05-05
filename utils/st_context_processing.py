@@ -18,12 +18,17 @@ with open(metadata_file, "r") as f:
 ZSTD_COMPRESSION = int(os.getenv('ZSTD_PARQUET_COMPRESSION_LEVEL', 10))
 DB_PATH = os.getenv('DUCKDB_DIR', os.path.join(os.getcwd(), 'datasets', 'db'))
 
-def ddb_alter_table_add_h3(
-    db_file: str,
-    table_name: str,
-    h3_resolution: int,
-    h3_col_name: str = None
-):
+def get_duckdb_connection(db_file: str):
+
+    """
+    Get a DuckDB connection with the required extensions loaded.
+    
+    Args:
+        db_file: Path to the DuckDB database file.
+        
+    Returns:
+        DuckDB connection object.
+    """
     db_conn = duckdb.connect(database=db_file)
     # make sure we have the required extensions
     db_conn.install_extension("spatial")
@@ -32,7 +37,19 @@ def ddb_alter_table_add_h3(
     db_conn.load_extension("httpfs")
     db_conn.install_extension("h3", repository="community")
     db_conn.load_extension("h3")
+    
+    return db_conn
 
+# Add an H3 column to a DuckDB table and populate it with H3 indices.
+def ddb_alter_table_add_h3(
+    db_file: str,
+    table_name: str,
+    h3_resolution: int,
+    h3_col_name: str = None
+):
+
+
+    db_conn = get_duckdb_connection(db_file)
     h3_col_name = f"h3_res_{h3_resolution}" if h3_col_name is None else h3_col_name
 
     # add the H3 column to the table
@@ -51,20 +68,77 @@ def ddb_alter_table_add_h3(
         raise ValueError(f"h3 col exists but not populated in {table_name} table")
         return False
 
+def ddb_save_subtype_geoms(
+    db_file: str,
+    div_table: str,
+    pv_table: str,
+    division_type = "country",
+    filter_dict: Optional[Dict[str, Tuple[str, Any]]] = None,
+):
+    # connect to the database
+    db_conn = duckdb.connect(database=db_file)
+
+    # by default, we will save all the country geometries
+    table_name = f"ov_divisions_{division_type}_geoms"
+
+    where_clause = "WHERE ov.subtype = 'country'" if division_type == "country" else f"WHERE ov.subtype = '{division_type}' and pv.division_subtype = '{division_type}'"
+    # Get the list of country geometries
+    division_geoms = f"""
+    SELECT ov.division_id, ov.country as country_iso, names.primary AS division_name, ov.bbox, ov.geometry,
+    count_if(pv.division_id is not null) AS {division_type}_pv_count,
+    SUM(ifnull(pv.area_m2, 0.0)) AS {division_type}_pv_area_m2
+    FROM {div_table} ov
+    LEFT JOIN {pv_table} AS pv ON ov.country = pv.division_country
+    {where_clause}
+    GROUP BY ov.division_id, ov.country, names.primary, ov.bbox, ov.geometry
+    """
+
+    try:
+        create_table_sql = f"""
+        CREATE OR REPLACE TABLE {division_type}_geoms AS
+        {division_geoms}
+        """
+        db_conn.execute(create_table_sql)
+        print(f"Created table {table_name} with {division_type} geometries")
+        return True
+    except Exception as e:
+        print(f"Error creating table for {division_type}: {e}")
+        return False
+
 # assumes both tables already have columns with a shared h3 index resolution
 def ddb_save_div_matches(
     db_file: str,
     labels_table: str,
     divisions_table: str,
     division_subtypes: List[str],
-    h3_col_name: str
+    h3_col_name: str = None,
+    use_bbox: bool = False,
+    force : bool = False
 ):
-    db_conn = duckdb.connect(database=db_file)
-    # make sure we have the required extensions
-    db_conn.install_extension("spatial")
-    db_conn.load_extension("spatial")
-    db_conn.install_extension("h3", repository="community")
-    db_conn.load_extension("h3")
+    db_conn = get_duckdb_connection(db_file)
+
+    cols_to_add = ["division_id", "division_country", "division_region", "division_name", "div_bbox", "division_subtype"]
+    # check if the columns already exist
+    existing_cols = db_conn.execute(f"""
+    SELECT DISTINCT column_name
+    FROM information_schema.columns
+    WHERE table_name = '{{ov_divisions_table}}' AND table_schema = 'main' ORDER BY ordinal_position;""").fetchall()
+    if all(col in existing_cols for col in cols_to_add) and h3_col_name in existing_cols and not force:
+        print(f"Columns already exist in {labels_table} table, skipping spatial join")
+        print("You can override this behavior by setting force=True")
+        return True
+
+    join_clause = None
+    if h3_col_name is None and use_bbox:
+        # use the bounding box for the join
+        join_clause = f"""
+        ON ST_Intersects(ST_MakeEnvelope(pv.bbox.xmin, pv.bbox.ymin, pv.bbox.xmax, pv.bbox.ymax), ST_MakeEnvelope(ov.bbox.xmin, ov.bbox.ymin, ov.bbox.xmax, ov.bbox.ymax))
+        """
+    elif h3_col_name is not None:
+        join_clause = f"ON pv.{h3_col_name} = ov.{h3_col_name}"
+    else:
+        print(f"ERROR! Divisions table must be joined on h3 index column {h3_col_name} or use_bbox=True")
+        return False
 
     # alter our labels table with 3 new columns from matching divisions: division_id, names.primary, bbox as div_bbox, and subtype
     div_spatial_join = f"""
@@ -78,7 +152,7 @@ def ddb_save_div_matches(
         ov.subtype AS division_subtype
     FROM {labels_table} AS pv
     JOIN {divisions_table} AS ov 
-    ON pv.{h3_col_name} = ov.{h3_col_name}
+    {join_clause}
     -- Returns true if the first geometry is within the second
     AND ST_Within(pv.geometry, ov.geometry) 
     """

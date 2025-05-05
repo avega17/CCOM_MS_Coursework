@@ -8,7 +8,6 @@ dependencies:
   - anywidget
   - ca-certificates
   - contextily
-  - cpython>=3.10
   - cubo
   - curl
   - dask
@@ -25,11 +24,8 @@ dependencies:
   - ipython
   - ipywidgets
   - jupyterlab
-  # - lightning
-  # - lightning-utilities
   - lonboard
   - matplotlib
-  # - networkx
   - notebook
   - overturemaps
   - pandas
@@ -55,37 +51,33 @@ dependencies:
   - yaml
   - pip:
       - geoarrow-pyarrow
-      # - geoarrow-pandas
-      - albumentations
+      - geoarrow-pandas
       # - data-gradients
       - datahugger
-      - dbt-core
-      - dbt-duckdb
+      # - dbt-core
+      # - dbt-duckdb
       - duckdb>=1.2.0
       - duckdb-engine
       # - emoji
       - fiona
-      - future
       - jupysql~=0.11
+      - jupyter_bbox_widget
+      # - jupyterlab_widgets
+      # - jupyter_copilot
       - numpy
       # - onnx
       - opencv-python
       - openeo
       - pillow
-      # - pip-tools
       # - pretrainedmodels
       - pycountry
       - pygeohash
       - pystac
       - rastervision
       - rtree
-      # - s3transfer
-      # - safetensors
       - sciencebasepy
       - scikit-image
       - scipy
-      # - scisort
-      # - scitree
       - seaborn
       - seedir
       - segmentation-models-pytorch
@@ -98,4 +90,4 @@ dependencies:
       - torchgeo~=0.7
       - torchmetrics>=1.0.0
       - torchvision
-# prefix: ~/miniconda3/envs/eo-pv-cv
+# prefix: ~/miniforge3/envs/eo-pv-cv/

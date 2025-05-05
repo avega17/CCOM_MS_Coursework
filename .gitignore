@@ -15,3 +15,8 @@ datasets/*
 profile.yml
 *.cpython*
 utils/*.cpython*
+
+# jupyter checkpoints and other junk
+*.ipynb_checkpoints
+*.jupyterlab-workspace
+.jupyter/

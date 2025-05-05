@@ -1,13 +1,16 @@
 {
     "deu_maxar_vhr_2023": {
+        "display_name": "Maxar | 30cm/15cm | Germany | ~2K labels",
         "doi": "10.6084/m9.figshare.22081091.v3",
         "repo": "figshare",
         "compression": "zip",
         "label_fmt": "yolo_fmt_txt",
         "has_imgs": false,
+        "model_arch": "YOLTv4",
         "label_count": 2542
     },
     "uk_crowdsourced_pv_2020": {
+        "display_name": "UK Crowdsourced PV | 2020 | ~265K labels",
         "doi": "10.5281/zenodo.4059881",
         "repo": "zenodo",
         "compression": null,
@@ -21,9 +24,11 @@
         },
         "crs": null,
         "has_imgs": false,
+        "model_arch": "None",
         "label_count": 265418
     },
     "usa_eia_large_scale_pv_2023": {
+        "display_name": "USA EIA database | 2023 | ~4K labels",
         "doi": "10.5281/zenodo.8038684",
         "repo": "sciencebase",
         "compression": "zip",
@@ -32,6 +37,7 @@
         "label_count": 4186
     },
     "chn_med_res_pv_2024": {
+        "display_name": "China PV | 2015;2020 | ~3.4K labels",
         "doi": "https://github.com/qingfengxitu/ChinaPV/tree/main",
         "repo": "github",
         "compression": null,
@@ -40,6 +46,7 @@
         "label_count": 3356
     },
     "usa_cali_usgs_pv_2016": {
+        "display_name": "USA USGS aerial imagery | 2016 | ~19K labels",
         "doi": "10.6084/m9.figshare.3385780.v4",
         "repo": "figshare",
         "compression": null,
@@ -49,14 +56,17 @@
             "features": "Polygon"
         },
         "has_imgs": false,
+        "model_arch": "None",
         "label_count": 19433
     },
     "chn_jiangsu_vhr_pv_2021": {
+        "display_name": "China Jiangsu | 2021 | ~3.7K labels",
         "doi": "10.5281/zenodo.5171712",
         "repo": "zenodo",
         "compression": "zip",
         "label_fmt": "pixel_mask",
         "has_imgs": true,
+        "model_arch": "DeepLab v3+",
         "label_count": 3716
     },
     "ind_pv_solar_farms_2022": {
