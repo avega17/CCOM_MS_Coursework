@@ -60,6 +60,7 @@ dependencies:
       - duckdb-engine
       # - emoji
       - fiona
+      - earthengine-api
       - jupysql~=0.11
       - jupyter_bbox_widget
       # - jupyterlab_widgets
@@ -80,14 +81,15 @@ dependencies:
       - scipy
       - seaborn
       - seedir
-      - segmentation-models-pytorch
+      - segmentation-models-pytorch~=0.5
       - stac-geoparquet
+      # - terratorch
       # - super-gradients==3.7.1
-      # - tensorboard
       - tifffile
       - timm
       - torch>=2.0.0
       - torchgeo~=0.7
       - torchmetrics>=1.0.0
       - torchvision
+      - wandb
 # prefix: ~/miniforge3/envs/eo-pv-cv/

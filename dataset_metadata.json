@@ -5,7 +5,11 @@
         "repo": "figshare",
         "compression": "zip",
         "label_fmt": "yolo_fmt_txt",
-        "has_imgs": false,
+        "has_imgs": true,
+        "chip_sizes" : {
+            "native": 416,
+            "hd_upscale": 832
+        },  
         "model_arch": "YOLTv4",
         "label_count": 2542
     },
