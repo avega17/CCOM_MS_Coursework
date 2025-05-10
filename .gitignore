@@ -20,3 +20,5 @@ utils/*.cpython*
 *.ipynb_checkpoints
 *.jupyterlab-workspace
 .jupyter/
+wandb/*
+tb_logs/*

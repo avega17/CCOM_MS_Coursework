@@ -17,6 +17,7 @@ from zipfile import ZipFile
 import random
 
 import numpy as np
+import cv2
 import pandas as pd
 import geopandas as gpd
 import pyarrow.parquet as pq
@@ -36,6 +37,148 @@ load_dotenv()
 OVERLAP_THRESH = float(os.getenv('GEOM_OVERLAP_THRESHOLD', 0.75))
 ZSTD_COMPRESSION = int(os.getenv('ZSTD_PARQUET_COMPRESSION_LEVEL', 10))
 DB_PATH = os.getenv('DUCKDB_DIR', os.path.join(os.getcwd(), 'datasets', 'db'))
+
+# ================= DATASET PREP FUNCTIONS =================
+
+def yolo_labels_to_binary_mask(label_file_path, image_height, image_width, output_mask_path):
+    """
+    Converts a YOLO bounding box annotation file to a single binary segmentation mask image.
+    All valid bounding boxes in the label file will be drawn as white rectangles
+    on a black background.
+
+    Args:
+        label_file_path (str or Path): Path to the YOLO .txt label file.
+        image_height (int): Height of the corresponding image chip.
+        image_width (int): Width of the corresponding image chip.
+        output_mask_path (str or Path): Path to save the generated binary mask image (e.g., .png).
+    """
+    mask = np.zeros((image_height, image_width), dtype=np.uint8)
+    found_boxes = False
+    try:
+        with open(label_file_path, 'r') as f:
+            for line in f:
+                parts = line.strip().split()
+                if len(parts) == 5:
+                    try:
+                        # YOLO format: class_id, x_center_norm, y_center_norm, width_norm, height_norm
+                        # We assume all class_ids in the file are the objects of interest (e.g., solar panels)
+                        x_center_norm = float(parts[1])
+                        y_center_norm = float(parts[2])
+                        width_norm = float(parts[3])
+                        height_norm = float(parts[4])
+
+                        # Denormalize coordinates
+                        x_center_abs = x_center_norm * image_width
+                        y_center_abs = y_center_norm * image_height
+                        box_width_abs = width_norm * image_width
+                        box_height_abs = height_norm * image_height
+
+                        # Calculate top-left (x1, y1) and bottom-right (x2, y2) pixel coordinates
+                        x1 = int(round(x_center_abs - (box_width_abs / 2)))
+                        y1 = int(round(y_center_abs - (box_height_abs / 2)))
+                        x2 = int(round(x_center_abs + (box_width_abs / 2)))
+                        y2 = int(round(y_center_abs + (box_height_abs / 2)))
+
+                        # Clip coordinates to be within image bounds
+                        x1 = max(0, x1); y1 = max(0, y1)
+                        x2 = min(image_width, x2); y2 = min(image_height, y2) # cv2.rectangle is exclusive for x2,y2
+
+                        # Draw a filled white rectangle on the mask if the box is valid
+                        if x1 < x2 and y1 < y2:
+                            cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1) # 255 for white, -1 for filled
+                            found_boxes = True
+                    except ValueError:
+                        print(f"Warning: Skipping malformed line in {label_file_path}: {line.strip()}")
+                        continue
+
+        if not found_boxes and Path(label_file_path).stat().st_size > 0 : # Only warn if file was not empty
+            print(f"Warning: No valid bounding boxes found or parsed in {label_file_path}. Mask will be empty.")
+
+        # Save the binary mask image
+        cv2.imwrite(str(output_mask_path), mask)
+        return True # Indicate success
+
+    except FileNotFoundError:
+        print(f"Error: Label file not found: {label_file_path}")
+        return False
+    except Exception as e:
+        print(f"An error occurred processing {label_file_path}: {e}")
+        return False
+
+def process_yolo_label_directory(yolo_label_dir, image_chips_dir, output_mask_dir,
+                                 chip_dims_info, default_chip_type='native'):
+    """
+    Processes all .txt label files in a directory, determines chip dimensions,
+    and saves corresponding binary masks.
+
+    Args:
+        yolo_label_dir (str or Path): Directory containing YOLO .txt label files.
+        image_chips_dir (str or Path): Directory containing corresponding image chips.
+                                      Used to infer dimensions if not explicitly known or if needed.
+        output_mask_dir (str or Path): Directory to save the generated mask images.
+        chip_dims_info (dict or tuple):
+            If dict: Maps chip type (e.g., 'native', 'hd') to (height, width) tuples.
+                     Filename must contain chip type.
+            If tuple: (height, width) to be used for all chips.
+        default_chip_type (str): If chip_dims_info is a dict and type cannot be inferred
+                                 from filename, use these dimensions.
+    """
+    yolo_label_dir = Path(yolo_label_dir)
+    image_chips_dir = Path(image_chips_dir)
+    output_mask_dir = Path(output_mask_dir)
+    output_mask_dir.mkdir(parents=True, exist_ok=True)
+
+    processed_count = 0
+    error_count = 0
+
+    label_files = list(yolo_label_dir.glob("*.txt"))
+    if not label_files:
+        print(f"No .txt label files found in {yolo_label_dir}")
+        return
+
+    for label_file in tqdm(label_files, desc="Processing YOLO labels", unit="file"):
+        img_h, img_w = None, None
+
+        if isinstance(chip_dims_info, tuple):
+            img_h, img_w = chip_dims_info
+        elif isinstance(chip_dims_info, dict):
+            fn_lower = label_file.name.lower() # Make case insensitive
+            if 'native' in fn_lower:
+                img_h, img_w = chip_dims_info.get('native')
+            elif 'hd' in fn_lower:
+                img_h, img_w = chip_dims_info.get('hd')
+            
+            if not (img_h and img_w): # If type not in filename or key not in dict
+                 img_h, img_w = chip_dims_info.get(default_chip_type)
+
+
+        if not (img_h and img_w): # Try to infer from image file if not determined
+            # This assumes image files have the same stem and are in image_chips_dir
+            potential_img_paths = [image_chips_dir / (label_file.stem + ext) for ext in ['.tif', '.png', '.jpg', '.jpeg']]
+            actual_img_path = next((p for p in potential_img_paths if p.exists() and p.is_file()), None)
+            if actual_img_path:
+                try:
+                    # Using PIL to get dimensions as it's already imported and handles various formats
+                    with Image.open(actual_img_path) as temp_img_pil:
+                        img_w, img_h = temp_img_pil.size # PIL size is (width, height)
+                    # print(f"Inferred dimensions ({img_h}x{img_w}) for {label_file.name} from image file: {actual_img_path}")
+                except Exception as e_img:
+                    print(f"Warning: Error reading image {actual_img_path} for dimensions: {e_img}. Skipping {label_file.name}.")
+                    error_count += 1
+                    continue
+            else:
+                print(f"Warning: Could not determine/infer chip dimensions for {label_file.name}. Skipping.")
+                error_count += 1
+                continue
+        
+        output_mask_file = output_mask_dir / f"{label_file.stem}.png" # Save masks as PNG
+        yolo_labels_to_binary_mask(label_file, img_h, img_w, output_mask_file)
+        processed_count += 1
+
+    print(f"\nFinished processing directory: {yolo_label_dir}")
+    print(f"Successfully generated {processed_count} masks in {output_mask_dir}.")
+    if error_count > 0:
+        print(f"Encountered errors or skips for {error_count} files.")
 
 # ================= REPOSITORY FETCH FUNCTIONS =================
 
