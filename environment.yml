@@ -5,91 +5,91 @@ channels:
   - https://repo.anaconda.com/pkgs/main
 dependencies:
   - annotated-types
-  - anywidget
   - ca-certificates
-  - contextily
-  - cubo
   - curl
-  - dask
-  - esda
-  - folium
   - fsspec
   - gdal
-  - geopandas
-  - geopy
   - geos
-  - h3-py
-  - h3pandas
-  - ipyleaflet
-  - ipython
-  - ipywidgets
-  - jupyterlab
-  - lonboard
-  - matplotlib
-  - notebook
-  - overturemaps
-  - pandas
+  # - h3pandas
   - pip
-  - planetary-computer
-  - pvlib
-  - pydeck
-  - pystac-client
   - python=3.12.*
-  - python-dateutil
-  - python-dotenv
-  - pytorch-lightning
-  - rasterio
+  - python-dateutilm
   # - requests
-  - rioxarray
   # - rsgislib
-  - scikit-learn
-  - shapely
-  - stackstac
-  - tqdm
-  - urllib3
-  - xarray
-  - yaml
   - pip:
-      - geoarrow-pyarrow
-      - geoarrow-pandas
+      # - anywidget
+      - contextily
+      - cubo
       # - data-gradients
+      - dask
       - datahugger
       # - dbt-core
       # - dbt-duckdb
       - duckdb>=1.2.0
       - duckdb-engine
+      # - esda
       # - emoji
+      - folium
       - fiona
+      - geodatasets
+      - geoarrow-pyarrow
+      - geoarrow-pandas
+      - geopandas
+      # - geopy
       - earthengine-api
+      - h3-py
+      - ipyleaflet
+      - ipython
+      - ipywidgets
       - jupysql~=0.11
-      - jupyter_bbox_widget
+      - jupyterlab
+      # - jupyter_bbox_widget
       # - jupyterlab_widgets
       # - jupyter_copilot
+      # - jupyterlab-git
+      # - jupyterlab-spreadsheet
+      - lightning
+      - lonboard
+      - matplotlib
       - numpy
       # - onnx
       - opencv-python
       - openeo
+      - overturemaps
       - pillow
+      - planetary-computer
+      - pvlib
       # - pretrainedmodels
       - pycountry
+      - pydeck
       - pygeohash
       - pystac
+      - pystac-client
+      - rasterio
       - rastervision
+      - rioxarray
       - rtree
       - sciencebasepy
       - scikit-image
+      - scikit-learn
       - scipy
       - seaborn
       - seedir
       - segmentation-models-pytorch~=0.5
+      - shapely
       - stac-geoparquet
+      - stackstac
       # - terratorch
       # - super-gradients==3.7.1
       - tifffile
       - timm
+      - tqdm
       - torch>=2.0.0
       - torchgeo~=0.7
       - torchmetrics>=1.0.0
       - torchvision
+      - urllib3
       - wandb
+      - xarray
+      - yaml
 # prefix: ~/miniforge3/envs/eo-pv-cv/

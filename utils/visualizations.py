@@ -19,6 +19,10 @@ import geopandas as gpd
 import folium
 from folium.plugins import HeatMap, MarkerCluster
 import pydeck as pdk
+import ipywidgets as widgets
+from IPython.display import display
+
+# ================= DATASET METADATA =================
 
 with open('dataset_metadata.json', 'r') as f:
     dataset_metadata = json.load(f)
@@ -59,6 +63,47 @@ def format_dataset_info(dataset):
     </table>
     """
     return html
+
+# helper function for creating a "Show Map" and "Clear Output" button with dedicated output area
+def create_map_buttons(map_object):
+    # Create taller buttons with custom styling
+    button_layout = widgets.Layout(
+        height='40px',
+        width='150px',
+        margin_left='2em',
+        margin_right='2em',
+        display='flex',
+        align_items='center',
+        justify_content='center'
+    )
+    
+    # Create an output widget for the map
+    output_area = widgets.Output(
+        layout=widgets.Layout(
+            height='500px',
+            border='2px solid #ddd',
+            overflow='auto',
+            align_content='center'
+        )
+    )
+    
+    show_map_button = widgets.Button(description="Show Map", button_style='info', layout=button_layout)
+    clear_output_button = widgets.Button(description="Clear Output", button_style='warning', layout=button_layout)
+
+    def on_show_map_clicked(b):
+        output_area.clear_output(wait=True)
+        with output_area:
+            display(map_object)
+    
+    def on_clear_output_clicked(b):
+        output_area.clear_output(wait=True)
+    
+    show_map_button.on_click(on_show_map_clicked)
+    clear_output_button.on_click(on_clear_output_clicked)
+    
+    # Return buttons and output area in a horizontal layout
+    controls = widgets.HBox([show_map_button, clear_output_button])
+    return widgets.VBox([controls, output_area])
 
 
 # ================= FOLIUM VISUALIZATION FUNCTIONS =================
@@ -404,6 +449,10 @@ def create_pydeck_scatterplot(gdf: gpd.GeoDataFrame,
 
     for col in cols_to_copy:
         df[col] = gdf[col]
+
+    # add slight increment to size_column to avoid zero size
+    if size_column and size_column in gdf.columns and pd.api.types.is_numeric_dtype(df[size_column]):
+        df[size_column] = df[size_column].fillna(0) + 1e-1 # Avoid zero size for sqrt scaling
 
     # --- Color Mapping ---
     df, color_accessor = get_pydeck_color(df, color_column)
