@@ -1044,7 +1044,7 @@ def geom_db_consolidate_dataset(
                 FROM read_parquet('{str(path)}')
                 WHERE ST_GeometryType(geometry) in ({', '.join([f"'{g}'" for g in keep_geoms])})
             """
-            cnt_query = f"SELECT COUNT(*) FROM read_parquet('{str(path)}') WHERE ST_GeometryType(geometry) not in ({', '.join([f"'{g}'" for g in keep_geoms])});"
+            cnt_query = f"""SELECT COUNT(*) FROM read_parquet('{str(path)}') WHERE ST_GeometryType(geometry) not in ({', '.join([f"'{g}'" for g in keep_geoms])});"""
             excluded_geoms_count += conn.execute(cnt_query).fetchone()[0]
             
             scans.append(scan_query)

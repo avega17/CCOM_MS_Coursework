@@ -38,6 +38,7 @@ dependencies:
       # - geopy
       - earthengine-api
       - h3-py
+      - imagecodecs # needed for tfrecord conversion -> (tiff, png mask)
       - ipyleaflet
       - ipython
       - ipywidgets
@@ -81,6 +82,7 @@ dependencies:
       - stackstac
       # - terratorch
       # - super-gradients==3.7.1
+      - tensorflow # need for handling tfrecords
       - tifffile
       - timm
       - tqdm
