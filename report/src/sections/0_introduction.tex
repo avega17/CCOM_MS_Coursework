@@ -9,12 +9,12 @@
     \\
     This assessment will primarily produce counts of installed systems, estimates of surface area, estimated PV generation potential while monitoring will provide forecasts of local solar irradiance which are used to model estimates of PV energy generation at specific sites. \\
     \\ 
-    The work developed for this thesis proposal is particularly inspired by and seeks to build upon the work realized, methodologies outlined, research gaps identified, and future work outlined in \cite{maxar_germany_pv_dataset}, \cite{Hu_solar_array_pitfalls_2022}, \cite{de-Hoog_sota_survey_2020}, \cite{Bansal_ssl_nowcasting_2022}, \cite{He_universal_pv_spectral_index_2024}, \cite{Jiang_rooftop_pv_assessment_2022}, \cite{Tremenbert_Kasmi_pyPV_roof_2023}, and \cite{Yu_deep_solar_2018}.
+    The work developed for this thesis proposal is particularly inspired by and seeks to build upon the work realized, methodologies outlined, research gaps identified, and future work outlined in \cite{robinson_ms_planet_global_renewables_watch_2025}, \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}, \cite{Li_solarcube_solar_forecasting_2024}, \cite{maxar_germany_pv_dataset}, \cite{Hu_solar_array_pitfalls_2022}, \cite{de-Hoog_sota_survey_2020}, \cite{Bansal_ssl_nowcasting_2022}, \cite{Jiang_rooftop_pv_assessment_2022}, \cite{Tremenbert_Kasmi_pyPV_roof_2023}, and \cite{Yu_deep_solar_2018}.
 
 \subsection{Specific Objectives}
     \begin{enumerate}
-        \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution imagery} ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global} inventory of labeled PV arrays collated from multiple scientific dataset publications [add citations] 
-        \item \textit{Near-term site-level} \textbf{forecasting of solar Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
+        \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution} (VHR) Multispectral \textit{satellite} imagery (MSI) ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global inventory of labeled PV arrays} collated from multiple scientific dataset publications [add citations] 
+        \item \textit{Near-term site-level forecasting} of solar \textbf{Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
         \begin{itemize}
             \item Time-series frames from geostationary satellite sensors with coarse spatial resolution, but high-temporal resolution (intra-hour scans)
             \item Historical Solar irradiance (e.g. NREL's National Solar Radiation Database)
@@ -23,10 +23,11 @@
         
     \end{enumerate}
     
-\subsection{Contribution Goals}
+\subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
-        \item Measure performance impact of modern Computer Vision architectures (e.g. Vision Transformers, Swin Transformer, CNN-Transformer hybrids) using much higher resolution imagery than most published research 
-        \item Measure impact of use of PV-specific spectral indices and specifically the benefits of including NIR + SWIR bands
+        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use \textit{global 30cm yearly basemaps} or catalogs from VHR MSI sensors, primarily from Maxar. 
+        \item All notable studies exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
         \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
     \end{enumerate}
     \hfill
