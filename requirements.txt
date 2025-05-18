@@ -4,15 +4,15 @@ anywidget
 contextily
 cubo
 dask
-esda
+# esda
 folium
 fsspec
 gdal
 geopandas
+geodatasets
 geopy
 geos
 h3-py
-h3pandas
 ipyleaflet
 ipython
 ipywidgets
@@ -23,10 +23,9 @@ notebook
 overturemaps
 pandas
 planetary-computer
-pvlib
+# pvlib
 pydeck
 pystac-client
-python-dateutil
 python-dotenv
 pytorch-lightning
 rasterio

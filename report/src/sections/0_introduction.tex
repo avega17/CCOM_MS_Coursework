@@ -11,24 +11,108 @@
     \\ 
     The work developed for this thesis proposal is particularly inspired by and seeks to build upon the work realized, methodologies outlined, research gaps identified, and future work outlined in \cite{robinson_ms_planet_global_renewables_watch_2025}, \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}, \cite{Li_solarcube_solar_forecasting_2024}, \cite{maxar_germany_pv_dataset}, \cite{Hu_solar_array_pitfalls_2022}, \cite{de-Hoog_sota_survey_2020}, \cite{Bansal_ssl_nowcasting_2022}, \cite{Jiang_rooftop_pv_assessment_2022}, \cite{Tremenbert_Kasmi_pyPV_roof_2023}, and \cite{Yu_deep_solar_2018}.
 
-\subsection{Specific Objectives}
-    \begin{enumerate}
-        \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution} (VHR) Multispectral \textit{satellite} imagery (MSI) ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global inventory of labeled PV arrays} collated from multiple scientific dataset publications [add citations] 
-        \item \textit{Near-term site-level forecasting} of solar \textbf{Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
-        \begin{itemize}
-            \item Time-series frames from geostationary satellite sensors with coarse spatial resolution, but high-temporal resolution (intra-hour scans)
-            \item Historical Solar irradiance (e.g. NREL's National Solar Radiation Database)
-            \item Any available PV power generation ground-truth time series
-        \end{itemize}
+\subsection{Problem Statement and Motivation} 
+% Brief description of the problem, objectives, methodology, and main findings. Less than 500 words.
+% emphasize the distinction between energy source replacement and badly labeled "energy transition" which has never ocurred historically and instead new energy sources have always been added to the energy mix
+The global response to climate change requires our civilization to implement a rapid transition to renewable energy sources in an effort to 
+decarbonize the energy sector as much as possible. The fastest growing renewable energy source is by far \textit{photovoltaic} (PV) solar energy [cite]. Growing at over 41\% per year on average since 2009\cite{kruitwagen_global_inventory_pv_units_2021},
+PV solar energy has far outpaced other renewable energy sources such as concentrated solar power (CSP), hydroelectric storage, geothermal energy, and, to a lesser extent, wind energy. 
+% include figure for rapidly decreasing cost of PV energy and related battery storage technologies
+This rapid growth has led to significant progress in international development goals such as the United Nations Sustainable Development Goals (SDG) which, among other things, 
+addresses the population level needs for clean and affordable energy, and actions to tackle climate change and its impacts\cite{maxar_germany_pv_dataset}. 
+
+Historically, one of the most effective means to ensure global cooperation and uniform implementation of environmental and energy policies has been through the establishment of multi-lateral 
+international agreements such as the Montreal Protocol, the Kyoto Protocol, and, most recently, the Paris Climate Accords signed by (add figure of \% of countries signed and ref) countries. 
+This agreement resulted in \textit{non-binding} commitments to reduce greenhouse gas emissions and goals to limit global warming to 1.5 - 2.0 degrees Celsius above pre-industrial levels. 
+Notably, 87\% of these Nationally Determined Contributions (NDCs) aim to increase the share of renewable energy in their energy mix with half specifying empirical generation figures\cite{robinson_ms_planet_global_renewables_watch_2025}. 
+\textbf{To maintain any semblance of international accountability to these commitments, these NDCs require extensive and accurate global monitoring and validation of any expansion of renewable energy infrastructure.}
+
+To address this \textit{international policy problem} there has been a variety of efforts to assess the progress of each renewable energy source leading to recurring reports, inventories, assessments, and databases at the global, 
+regional, and national levels. Many of these efforts prove insufficient due to only providing aggregated summaries or statistical extrapolations at the national level (IRENA, IEA, BP), or being limited to specific regions 
+(i.e. primarily Europe, North America, and China). Particularly in the case of PV solar energy, there has been very significant progress over the last decade in the development of remote sensing and deep learning methods to assess 
+the distribution of PV solar energy at the site, regional, and global levels (cite the many PV assessment papers).
+Most recently, a collaboration between Microsoft, the Nature Conservancy, and Planet Labs\cite{robinson_ms_planet_global_renewables_watch_2025} has produced \textit{``Global Renewables Watch''}, 
+a public dataset of industrial, commercial, and utility-scale PV solar energy and wind energy installations firmly establishing the \textbf{feasibility of using high-resolution satellite imagery and deep learning methods 
+to assess the distribution of renewable energy infrastructure at the Planetary scale}.
+
+These publications and datasets have primarily focused on large-scale, utility-scale PV solar energy installations (i.e. badly labeled ``solar farms'') which are 
+typically located in remote areas with broad land availability and low land use conflicts. However, for some countries, land comes at a premium and concentrated large-scale solar energy installations are 
+either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts. This leads to countries where distributed, small-scale rooftop or building-integrated 
+PV solar energy installations make up a significant portion of the total installed capacity which is not captured in assessment limited to large-scale installations. 
+For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025} and Kruitwagen et al\cite{kruitwagen_global_inventory_pv_units_2021} use a $\ge$ 10KW 
+Additionally, intermittent renewable energy sources bring about a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale.
+
+The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that national electric grid 
+supply and demand are balanced. PV solar energy is particularly sensitive to local weather conditions and received solar irradiance which can both be monitored using 
+remote sensing methods and local weather stations. There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
+the use of spectral reflectance features in Computer Vision (CV) models for PV solar array detection\cite{He_universal_pv_spectral_index_2024}, and advances in spatio-temporal data fusion methods to improve the temporal resolution of very-high-resolution (VHR) satellite imagery\cite{Tremenbert_Kasmi_pyPV_roof_2023}. 
+
+This project looks to outline the work required to address these interconnected challenges by tackling two core subproblems leveraging remote sensing data and advances in deep learning methods:
+    % \vfill\null
+    % \columnbreak
+\end{multicols}
+
+\subsubsection{[CCOM6120] Subproblem 1:}
+    \textbf{Detection and Segmentation of distributed rooftop PV Systems using Computer Vision baseline models} 
+    % \vspace{0.1cm}
+    The first fundamental challenge lies in the automated, accurate, and scalable identification and geometric characterization of distributed rooftop PV panels using very-high-resolution (VHR) multispectral satellite imagery. 
+    Generating reliable, up-to-date inventories of these small, dispersed assets is crucial for granular PV potential assessments\cite{Pueblas_workflow_rooftop_PV_assessment_sat_img_2023}\cite{Jiang_rooftop_pv_assessment_2022}, infrastructure planning, 
+    monitoring deployment rates against policy goals\cite{de-Hoog_sota_survey_2020}, and producing the georeferenced geometry data required for accurate site-level solar irradiance forecasting and PV energy generation estimates\cite{Bansal_ssl_nowcasting_2022}.
+    % \vfill\null
+    % \columnbreak
+    We will use the final project for CCOM6120 as preliminary work on this subproblem. We will explore baseline segmentation model architectures (e.g. UNet, FPN, PAN, SegFormer, etc.) and 
+    encoder combinations (e.g. ResNet, EfficientNet, ViT, Swin, etc.) and how they perform on some existing published datasets. As part of the project we will develop and establish some 
+    baseline data processing pipelines, model training workflows, and evaluation metrics. 
+
+\subsubsection{[CCOM6050] Subproblem 2:} 
+    \textbf{Hierarchical Spatial Clustering of global PV installations to optimize dataset generation} 
+    Given a large, globally distributed set of Points-of-Interest (PoIs) representing Photovoltaic (PV) solar panel installations (potentially hundreds of thousands to millions), 
+    the objective is to efficiently identify and retrieve subsets of relevant satellite imagery (rasters) from open access archives (e.g., STAC catalogs) that maximize the spatial and temporal coverage of the PoIs. 
+    Our \textit{Optimization Goal} is to design an algorithmic framework that \textbf{maximizes} the spatial and temporal coverage of the PoIs by the fetched rasters while simultaneously 
+    \textbf{minimizing} the number of raster queries and the volume of data downloaded and processed for model training. 
+
+    \textbf{Why it's a problem:} 
+    \begin{itemize}
+        \item Naive querying strategies (i.e. per POI, or per cluster of POIs) quickly becomes very inefficient for large, globally distributed datasets of PoIs: 
+        leads to excessive API calls or HTTP requests, redundant data retrieval, and high processing overhead.
+        \item PV installations are naturally spatially clustered: \textit{but} these clusters are not known a priori and can span across arbitrary administrative boundaries or diverse geographic contexts.
+        \item The spatial and temporal coverage of the PoIs is not uniform: being able to \textit{dynamically adjust} the size and shape of the query bounding boxes based on the density of PoIs in a 
+        given area and the extent of specific raster items is crucial for efficient data retrieval.
+    \end{itemize}
+
+    We will use the final project for CCOM6050 as preliminary work on this subproblem. We will explore the use of data fusion with geospatial context from Overture Maps, the effectiveness of aggregating our hundreds of thousands of PoIs 
+    using Discrete Global Grid Systems (DGGS) such as Uber's H3, and how we can leverage hierarchical spatial clustering algorithms over our H3 hexagon cells to produce a data structure that can be used to efficiently query and retrieve
+    satellite imagery from open access catalogs.  
+
+\subsubsection{[Future Thesis Work] Subproblem 3:} 
+    \textbf{Solar irradiance forecasting at specific sites} 
+    % \vspace{0.5cm}
+
+    The second major challenge is analyzing \st{high-temporal-resolution surface reflectance} (intra-hour) time series of geostationary satellite imagery to produce accurate short-term forecasts of solar irradiance at specific sites. 
+    This is a critical requirement for energy grid operators to ensure that supply and demand are balanced, especially in the case of intermittent renewable energy sources such as wind and solar energy. 
+
+    
+% \subsection{Specific Objectives}
+%     \begin{enumerate}
+%         \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution} (VHR) Multispectral \textit{satellite} imagery (MSI) ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global inventory of labeled PV arrays} collated from multiple scientific dataset publications [add citations] 
+%         \item Leverage algorithms that can aid in optimizing our fetching of global satellite imagery from Open Access catalogs, and the use of \textbf{multi-spectral} data to improve the detection of PV arrays.
+%         \item \textit{Near-term site-level forecasting} of solar \textbf{Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
+%         \begin{itemize}
+%             \item Time-series frames from geostationary satellite sensors with high temporal resolution coarse spatial resolution
+%             \item Historical Solar irradiance (e.g. NREL's National Solar Radiation Database)
+%             \item Any available PV power generation ground-truth time series
+%         \end{itemize}
         
-    \end{enumerate}
+%     \end{enumerate}
     
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
-        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications
-        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use \textit{global 30cm yearly basemaps} or catalogs from VHR MSI sensors, primarily from Maxar. 
-        \item All notable studies exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
-        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
+        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established baselines (e.g. UNet, FPN, PAN, etc.)
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
+        We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar, to perform a global survey of PV installations that includes both large-scale farms and distributed rooftop PV systems.
+        \item Almost all notable studies (with the exception of \[cite GloSoFarID\]) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
+        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
+        (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
     \end{enumerate}
     \hfill
 % \lipsum[1]

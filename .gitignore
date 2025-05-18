@@ -22,3 +22,12 @@ utils/*.cpython*
 .jupyter/
 wandb/*
 tb_logs/*
+
+# ignore output of local LaTeX compilation
+*.aux
+*.bbl
+*.fdb_latex*
+*.fls
+*.log
+*.out
+*.toc
