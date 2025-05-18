@@ -1,13 +1,27 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{Section}
-\textbf{Small description}
+\section{Complexity Analysis}
+\textbf{Here we will analyze the running time and complexity of the components of the proposed methodology}
 \bigskip
 \end{center}
 {\color{gray}\hrule}
-\begin{multicols}{2}
-\subsection{Subsection}
+% \begin{multicols}{2}
+\subsection{H3 Indexing and Grid Operations}
+% * Complexity of `h3.geo_to_h3` (typically efficient).
+% * Complexity of feature aggregation per cell.
 \lipsum[1]
-\subsection{Subsection}
+\subsection{Mutual Reachibility Graph Construction from H3 Grid Cells}
+% * If using `h3.grid_distance` for all pairs: $O(N^2)$ to compute all distances, where N is number of H3 cells with PV. (Mitigation: only consider k-nearest H3 neighbors or neighbors within a fixed H3 distance to create a sparse graph).
+% * If sparse graph: $O(N \cdot \text{avg_degree})$.
 \lipsum[1-3]
-\end{multicols}
+
+\subsection{Parallel MST Construction}
+* Work: $O(N^2)$ in constant dimensions (for WSPD-based EMST, though for `h3.grid_distance` this might differ if not using WSPD directly but still processing edges by weight). More practically, the efficiency comes from not materializing all pairs/edges.
+* Depth (Parallelism): Polylogarithmic, e.g., $O(\log^2 N)$ 
+
+\subsection{Dendrogram Construction & Cluster Partitioning}
+\subsection{Overall Work, Scalability, and Complexity}
+\subsection{Subsection}
+\subsection{Subsection}
+
+% \end{multicols}

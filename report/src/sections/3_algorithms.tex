@@ -8,51 +8,84 @@
 
 \begin{multicols}{2}
 
-\subsection{Algorithm Design}
+\subsection{Data Ingestion and Preprocessing}
+
+% * Sources of PV solar panel label datasets (cite your aggregated sources).
+% * Cleaning, geometric validation, and deduplication techniques.
+% * *(Potential for Map Point Reduction (MPR) inspired by Oje et al., 2025, if initial PV data is excessively dense/redundant before H3 aggregation).*
+
+\subsection{H3 Indexing and Spatial Aggregation}
+% * Algorithm for assigning PV labels to H3 cells at a chosen resolution.
+%     * Discussion on selecting H3 resolution(s).
+% * Derivation of H3 cell-level features (e.g., PV count, total PV area, installation date statistics).
+% * *(Optional: Augmentation with Overture Maps Land Cover or other STAC-derived features per H3 cell).*
+
+\subsection{Graph Construction from H3 Grid Cells}
+% * Nodes: H3 cells containing PV installations.
+% * Edge Weight Definition:
+%     * Primary: `h3.grid_distance(cell_a, cell_b)` to define topological proximity.
+%     * *(Discussion of potential hybrid approaches if feature similarity is incorporated).*
+% * Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance).
+
+\subsection{Minimum Spanning Tree (MST) Construction}
+% * Algorithm: Parallel GeoFilterKruskal (GFK) with MemoGFK optimization (Wang et al., 2021).
+% * Justification: Scalability for large numbers of H3 cells, memory efficiency.
+% * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
+
+\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and other methods}
+% * Algorithm(s):
+%     * RC-Tree Tracing (RCTT) (Dhulipala et al., 2024) for CPU-based parallelism.
+%     * PANDORA (Sao et al., 2024) for GPU-accelerated computation.
+% * Justification: Work-optimality (or near-optimality), practical speedups, robustness to dendrogram skew.
+
+\subsection{Optimized STAC Querying}
+% * Algorithm for generating STAC query parameters (bounding boxes, geometries, time ranges) based on the identified H3 cell cluster footprints.
+% * Strategy for minimizing redundant queries (e.g., merging overlapping cluster query geometries).
+
 % \lipsum[1][10-15]
 
-\subsubsection{Statistical STF algorithm candidates}
-(add citations)
+% \subsubsection{Statistical STF algorithm candidates}
+% (add citations)
 
-\begin{itemize}
-    \item Weight Function-based methods
-        \begin{enumerate}
-            \item STARFM (Spatial and Temporal Adaptive Reflectance Fusion Model): \\
-            One of the earliest and most widely used methods. It assumes land cover change is minimal between image acquisition dates  
-            (ok for our application) and uses spectral similarity and spatial distance to weight contributions from known fine-resolution 
-            pixels to predict reflectance for dates where only coarse imagery is available. 
-            \item ESTARFM (Enhanced STARFM): \\
-            An extension of STARFM designed to perform better in heterogeneous landscapes by considering spectral unmixing concepts implicitly 
-            and using conversion coefficients derived from two fine/coarse image pairs before and after the desired prediction date. 
-        \end{enumerate}
-    \item Unmixing-based methods
-        \begin{enumerate}
-            \item STDFA (Spatio-Temporal Data Fusion Approach): \\
-            Combines spectral unmixing and spatial interpolation to predict fine-resolution reflectance. 
-        \end{enumerate}
-    \item Regression-based methods
-\end{itemize}
+% \begin{itemize}
+%     \item Weight Function-based methods
+%         \begin{enumerate}
+%             \item STARFM (Spatial and Temporal Adaptive Reflectance Fusion Model): \\
+%             One of the earliest and most widely used methods. It assumes land cover change is minimal between image acquisition dates  
+%             (ok for our application) and uses spectral similarity and spatial distance to weight contributions from known fine-resolution 
+%             pixels to predict reflectance for dates where only coarse imagery is available. 
+%             \item ESTARFM (Enhanced STARFM): \\
+%             An extension of STARFM designed to perform better in heterogeneous landscapes by considering spectral unmixing concepts implicitly 
+%             and using conversion coefficients derived from two fine/coarse image pairs before and after the desired prediction date. 
+%         \end{enumerate}
+%     \item Unmixing-based methods
+%         \begin{enumerate}
+%             \item STDFA (Spatio-Temporal Data Fusion Approach): \\
+%             Combines spectral unmixing and spatial interpolation to predict fine-resolution reflectance. 
+%         \end{enumerate}
+%     \item Regression-based methods
+% \end{itemize}
 
-\subsubsection{Deep Learning STF algorithm candidates}
-\begin{itemize}
-    \item CNN-based methods
-    \item GAN-based methods
-\end{itemize}
+% \subsubsection{Deep Learning STF algorithm candidates}
+% \begin{itemize}
+%     \item CNN-based methods
+%     \item GAN-based methods
+% \end{itemize}
 
-\subsection{Implementation}
-(add links to colab jupyter notebooks) \\
-(add essential code excerpts to highlight algorithm details)
+% \subsection{Implementation}
+% (add links to colab jupyter notebooks) \\
+% (add essential code excerpts to highlight algorithm details)
 
-\subsection{Complexity Analysis}
+% \subsection{Complexity Analysis}
 
-\begin{itemize}
-    \item CV factors: image size, number of bands, number of samples
-    \item DL factors: number of layers, batch size, number of epochs, fp weight size
-    \item non-DL factors: window size, other parameters 
-    \item Big O notation
-    \item Running time 
-    \item Memory usage
-\end{itemize}
+% \begin{itemize}
+%     \item CV factors: image size, number of bands, number of samples
+%     \item DL factors: number of layers, batch size, number of epochs, fp weight size
+%     \item non-DL factors: window size, other parameters 
+%     \item Big O notation
+%     \item Running time 
+%     \item Memory usage
+% \end{itemize}
 
 \end{multicols}
 
