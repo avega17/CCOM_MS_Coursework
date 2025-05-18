@@ -14,9 +14,10 @@
 \subsection{Specific Objectives}
     \begin{enumerate}
         \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution} (VHR) Multispectral \textit{satellite} imagery (MSI) ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global inventory of labeled PV arrays} collated from multiple scientific dataset publications [add citations] 
+        \item Leverage algorithms that can aid in optimizing our fetching of global satellite imagery from Open Access catalogs, and the use of \textbf{multi-spectral} data to improve the detection of PV arrays.
         \item \textit{Near-term site-level forecasting} of solar \textbf{Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
         \begin{itemize}
-            \item Time-series frames from geostationary satellite sensors with coarse spatial resolution, but high-temporal resolution (intra-hour scans)
+            \item Time-series frames from geostationary satellite sensors with high temporal resolution coarse spatial resolution
             \item Historical Solar irradiance (e.g. NREL's National Solar Radiation Database)
             \item Any available PV power generation ground-truth time series
         \end{itemize}
@@ -26,7 +27,7 @@
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
         \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications
-        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use \textit{global 30cm yearly basemaps} or catalogs from VHR MSI sensors, primarily from Maxar. 
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar. 
         \item All notable studies exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
         \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
     \end{enumerate}
