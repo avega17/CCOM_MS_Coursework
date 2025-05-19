@@ -1,0 +1,58 @@
+{\color{gray}\hrule}
+\begin{center}
+\section{Complexity Analysis}
+\textbf{Here we will analyze the running time and complexity of the components of the proposed methodology}
+\bigskip
+\end{center}
+{\color{gray}\hrule}
+% \begin{multicols}{2}
+\subsection{H3 Indexing and Grid Operations}
+% * Complexity of `h3.geo_to_h3` (typically efficient).
+% * Complexity of feature aggregation per cell.
+In terms of running time and complexity, the H3 indexing process is efficient, with a time complexity of $O(P)$ for $P$ PV installations.
+H3's \texttt{h3.latlng\string_to\string_cell (lat, lng, resolution)} function can be considered approximately $O(1)$ (constant time) for a single point due to the nature of their DGGS structure.
+It's not performing a search or a spatial join that scales with the number of existing cells or points in a dataset. 
+Instead, the process involves a fixed series of geometric transformations and calculations to determine the H3 index for a given latitude and longitude: 
+
+\begin{enumerate}
+    \item \textit{Projection}: The input latitude and longitude (WGS84 coordinates) are first projected onto one of the 20 faces of an icosahedron that H3 uses as its base global structure. This determines which primary face the point falls onto.
+    \item \textit{Face-Centered Coordinate System}: The point is then transformed into a 2D coordinate system specific to it's corresponding icosahedron face. 
+    This involves some trigonometric calculations to convert the latitude and longitude into a flat coordinate system.
+    \item \textit{Hierarchical Subvision and Quantization}: H3 uses a hierarchical subdivision scheme to enable multi-resolution indexing. To find the cell at a specific resolution:
+    \begin{enumerate}
+        \item The algorithm determines the base (resolution 0) cell on that face that contains the point.
+        \item It then iteratively refines this down to the target resolution. Each step involves determining which of the seven child cells (for hexagonal children) the point falls into. 
+        This is done through further coordinate transformations and comparisons within a small, fixed set of possibilities (the seven children). 
+        The number of iterations is determined by the target resolution (0-15), which is a small, bounded constant.
+    \end{enumerate}
+    \item \textit{Cell ID Encoding}: Finally, once the specific hexagon at the target resolution is identified, its unique H3 cell ID is computed and returned. This encoding follows a 64-bit unsigned integer format where:
+    % \begin{enumerate}
+    %     \item The 4 most significant bits store the H3 mode (always 1 for hexagon cells)
+    %     \item The next 4 bits store the resolution (0-15)
+    %     \item The next 7 bits encode the base cell number (0-121)
+    %     \item The remaining bits contain directional digits for navigating from the base cell to the target resolution cell, with 3 bits per resolution level
+    % \end{enumerate}
+\end{enumerate}
+
+This efficient and compact encoding scheme allows for fast indexing and efficient storage and retrieval of hierarchical spatial information, requiring only 8 bytes per cell regardless of resolution.
+
+\lipsum[1]
+\subsection{Mutual Reachibility Graph Construction from H3 Grid Cells}
+% * If using `h3.grid_distance` for all pairs: $O(N^2)$ to compute all distances, where N is number of H3 cells with PV. (Mitigation: only consider k-nearest H3 neighbors or neighbors within a fixed H3 distance to create a sparse graph).
+% * If sparse graph: $O(N \cdot \text{avg_degree})$.
+\lipsum[1-3]
+
+\subsection{Traditional Minimum Spanning Tree (MST) Construction Algorithms}
+% * Prim's Algorithm: $O(N^2)$ for dense graphs, $O(E \log N)$ for sparse graphs (using priority queues).
+% * Kruskal's Algorithm: $O(E \log E)$, where E is the number of edges.
+
+\subsection{Parallel MST Construction}
+ Work: $O(N^2)$ in constant dimensions (for WSPD-based EMST, though for `h3.grid_distance` this might differ if not using WSPD directly but still processing edges by weight). More practically, the efficiency comes from not materializing all pairs/edges.
+Depth (Parallelism): Polylogarithmic, e.g., $O(\log^2 N)$. Referes to the longest sequence of sequential operations in the parallel algorithm. 
+
+\subsection{Cluster Hierarchy Construction}
+
+
+\subsection{Overall Work, Scalability, and Complexity}
+
+% \end{multicols}

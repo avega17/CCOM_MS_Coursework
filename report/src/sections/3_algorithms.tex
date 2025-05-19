@@ -9,36 +9,106 @@
 \begin{multicols}{2}
 
 \subsection{Data Ingestion and Pre-processing}
-
-% * Sources of PV solar panel label datasets (cite your aggregated sources).
-% * Cleaning, geometric validation, and deduplication techniques.
 % * *(Potential for Map Point Reduction (MPR) inspired by Oje et al., 2025, if initial PV data is excessively dense/redundant before H3 aggregation).*
 
-\subsection{H3 Indexing and Spatial Aggregation}
+\paragraph{Dataset Acquisition and Management} 
+We download PV installation datasets from various academic repositories including Zenodo, figshare, GitHub, and ScienceBase. 
+The datasets are available in multiple vector file formats (GeoJSON, GeoPackage, Shapefile), which we standardize using our data pipeline. 
+We utilize the \texttt{datahugger} library to fetch datasets from Zenodo and figshare, \texttt{sciencebasepy} for accessing the USGS ScienceBase Catalog, 
+and custom functions for GitHub-hosted datasets. Dataset metadata is stored in a structured JSON configuration file to track sources, DOIs, and formats. 
+
+\paragraph{Standardization to GeoParquet}
+We convert all vector dataset files to GeoParquet format using \texttt{geopandas}. GeoParquet extends the Apache Parquet columnar storage format with geospatial capabilities, providing significant advantages:
+\begin{itemize}
+    \item \textit{Efficient storage} with built-in compression, reducing file sizes by up to 10x compared to GeoJSON
+    \item \textit{Columnar storage format} optimized for analytical queries and filtering operations
+    \item \textit{Spatial indexing and predicate pushdown} capabilities for efficient geospatial operations
+    \item \textit{Wide ecosystem compatibility} with modern geospatial data tools
+\end{itemize}
+
+This provides a space complexity reduction. For example, the cumulative size of the 5 datasets(cite) we worked with this semester was 690.5 MB in GeoJSON and GeoPackage formats, 
+while after consolidation and conversion to GeoParquet the size was reduced to 107.3MB. This is largely due to the compression capabilities of the Parquet format, from removing unused columns, 
+and filtering out invalid geometries. 
+
+\paragraph{Consolidation and Deduplication}
+After standardizing individual datasets, we:
+\begin{enumerate}
+    \item Consolidate all datasets into a single DuckDB database with spatial extensions enabled
+    \item Create a unified schema with standardized columns (geometry, area, source dataset, etc.)
+    \item Perform spatial deduplication to remove overlapping polygons using spatial indices
+    \item For CV models, filter to only retain valid polygon geometries (POLYGON, MULTIPOLYGON) for segmentation training
+\end{enumerate}
+
+The running time for the deduplication process is reduced by using spatial indices. A sp 
+
+
+\paragraph{Geospatial Enrichment}
+We enrich the consolidated PV dataset with administrative boundary information from the Overture Maps project:
+\begin{enumerate}
+    \item Spatial join with Overture divisions (countries, regions, counties)
+    \item Administrative division matching (ISO country codes and region names, and division\_ids for future querying) for each PV installation
+    \item Aggregation statistics at country and region levels
+    \item Choropleth visualizations of PV distribution by country and region
+    \item Leafmap interactive scatterplot map for visualizing PV installations coordinates
+    \item Adding geographic context allows us to train by country or even regional models adapted to local conditions
+    \item Enables efficient querying of PV installations by administrative divisions
+\end{enumerate}
+
+\paragraph{H3 Indexing and Spatial Aggregation}
+To efficiently organize and query the global PV dataset, we utilize H3, the hierarchical hexagonal DGGS (Discrete Global Grid System) developed by Uber.
+H3 provides a hierarchical structure of hexagonal grid cells, allowing for efficient spatial indexing and querying. There are \texttt{duckdb} and \texttt{python} bindings available for H3,
+which we use to index the PV dataset and perform spatial operations.
+\begin{enumerate}
+    \item Each PV installation is assigned an H3 index at optimal resolution based on its size
+    \item Common H3 resolution (level 5, $\sim$250km$^2$ hexagons) added for regional aggregation
+    \item Efficient spatial clustering and adaptive subdivisions using H3 hierarchy
+    \item Spatial joins with geospatial data layers (Overture Maps) using H3 indices as common keys
+\end{enumerate}
+
+
 % * Algorithm for assigning PV labels to H3 cells at a chosen resolution.
 %     * Discussion on selecting H3 resolution(s).
 % * Derivation of H3 cell-level features (e.g., PV count, total PV area, installation date statistics).
 % * *(Optional: Augmentation with Overture Maps Land Cover or other STAC-derived features per H3 cell).*
 
-\subsection{Graph Construction from H3 Grid Cells}
+\subsection{Mutual Reachibility Graph from H3 Grid Cells [Future Work]}
+A Mutual Reachibility Graph (MRG) is an undirected, weighted graph where each node represents a point in the dataset and edges represent the mutual reachability distance between points.
+As one of the first steps in our clustering algorithm, we will create a MRG using the centroids of the H3 grid cells containing PV installations instead of the raw input data points $P$.
+One advantage this provides is that spatially close PV installations are contained within the same H3 cell, which means we turn our set of raw input data points $P$ into a much smaller set of H3 cells $C$ that contain the PV installations.
+This greatly reduces the number of points we need to consider when building our graph depending on the desired resolution of the H3 cells.
+For the MRG edge weights, we use the H3 grid distance between cells $c_a$ and $c_b$ as our mutual reachability distance $d_{MRG}(c_a, c_b)$ metric. 
+To reduce the number of edges we need to consider, we can limit the number of neighbors we consider  to only the $k$ nearest neighbors or only those within a certain H3 distance. 
+A naive approach would be to compute the distance between all pairs of H3 cells, which would take $O(N^2)$ time, where $N$ is the number of H3 cells with PV installations.
+However, this can be mitigated by for each cell $c_a$ only considering the $k$ nearest neighbors or neighbors within a fixed H3 distance to reduce the number of edges we need to compute. 
+This is particularly critical for tree construction algorithms like Kruskal's or Prim's, whose runtimes scales based on the number of edges we are considering for graph construction.
+
+Nodes: H3 cells containing PV installations at a specified resolution.
+Edges: "Path" of adjacent H3 grid cells that connect two H3 cells.
+Edge Weight Metric: h3.grid\_distance(cell\_a, cell\_b) to define topological proximity. 
+This integer distance (number of hops) will be the primary factor for MST construction, prioritizing connectivity.
+% MST Edge Representation: While the MST algorithm operates on these weights, for later use (especially negative sampling), the paths corresponding to MST edges are also considered. For an MST edge connecting cell_A and cell_B, the sequence of H3 cells forming this direct connection can be materialized using h3.grid_path_cells(cell_A, cell_B). These "path cells" represent the immediate spatial context between clustered PV cells.
+
+Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance for initial graph formation before MST).
+% * Algorithm: Mutual Reachability Graph (MRG) construction.
 % * Nodes: H3 cells containing PV installations.
 % * Edge Weight Definition:
 %     * Primary: `h3.grid_distance(cell_a, cell_b)` to define topological proximity.
 %     * *(Discussion of potential hybrid approaches if feature similarity is incorporated).*
 % * Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance).
 
-\subsection{Minimum Spanning Tree (MST) Construction}
+\subsection{Minimum Spanning Tree (MST) Construction [Future Work]}
 % * Algorithm: Parallel GeoFilterKruskal (GFK) with MemoGFK optimization (Wang et al., 2021).
 % * Justification: Scalability for large numbers of H3 cells, memory efficiency.
 % * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
 
-\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution}
+\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution [Future Work]}
 % * Algorithm(s):
 %     * RC-Tree Tracing (RCTT) (Dhulipala et al., 2024) for CPU-based parallelism.
 %     * PANDORA (Sao et al., 2024) for GPU-accelerated computation.
 % * Justification: Work-optimality (or near-optimality), practical speedups, robustness to dendrogram skew.
 
-\subsection{Optimized STAC Querying}
+\subsection{Optimized STAC Querying [Future Work]}
+The primary goal of the proposed H3-cell based hierarchical clustering algorithm is not simply to aid in our clustering process, but
 % * Algorithm for generating STAC query parameters (bounding boxes, geometries, time ranges) based on the identified H3 cell cluster footprints.
 % * Strategy for minimizing redundant queries (e.g., merging overlapping cluster query geometries).
 

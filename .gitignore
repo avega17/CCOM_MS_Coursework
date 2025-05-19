@@ -30,4 +30,6 @@ tb_logs/*
 *.fls
 *.log
 *.out
+*.synctex.gz
 *.toc
+*.pdf

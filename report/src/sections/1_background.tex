@@ -26,6 +26,8 @@ to the following characteristics:
         \end{enumerate}
 \end{itemize}
 
+In the context of data engineering, geospatial data brings several optimization and operations that can ease the process of analyzing large volumes of this type of data.
+One of the most relevant concepts for our project is a spatial index 
 % A fundamental challenge in RS is the tradeoff that an individual sensor's orbit and design must make between spatial, spectral, and temporal resolution. 
 
 
@@ -49,9 +51,42 @@ Some relevant CV architectures include Convolutional Neural Networks (CNNs), Vis
 % - Brief overview of relevant sensor types (multispectral, VHR).
 
 \subsection{SpatioTemporal Asset Catalogs}
-% * Role of STAC in standardizing access to geospatial raster data.
-% * Structure of STAC (Catalogs, Collections, Items, Assets).
-% * Challenges in efficiently querying large STAC archives for widespread, numerous PoIs.
+\label{subsec:stac} % Added label for cross-referencing
+
+A SpatioTemporal Asset Catalog (STAC) is a specification schema that provides a standardized, open, and interoperable way to describe and catalog geospatial information. 
+It enables \textbf{efficient searching, discovery, and access} to imagery, sensor data, and other Earth observation (EO) products. 
+STAC has emerged as a crucial component in modern geospatial data infrastructure and workflows, addressing the challenges of 
+managing and accessing vast volumes of EO data when performing large-scale analysis.
+
+Key features and benefits of STAC include:
+\begin{itemize}
+    \item \textbf{Standardization}: STAC defines a common language for describing geospatial assets, using JSON to structure metadata. 
+    This includes spatial extent (geometry), temporal coverage (datetime), data providers, licensing, and links to the actual data files (assets) and related resources. 
+    \item \textbf{Discoverability}: The STAC metadata structure enables powerful search capabilities. 
+    Users can query catalogs based on spatial (e.g. single point, or Polygon features) and temporal criteria, as well as other metadata fields like cloud\_cover, making it easier to find relevant data across diverse collections and providers without needing to understand provider-specific APIs.
+    \item \textbf{Accessibility}: STAC catalogs typically link directly to the underlying data assets, often hosted in cloud object storage (e.g. AWS S3, Google Cloud Storage). 
+    This allows for direct access to data, often in cloud-optimized formats like Cloud-Optimized GeoTIFF (COG), 
+    enabling users to stream or process data without downloading entire image strips.
+    \item \textbf{Interoperability}: The specification is designed to be extensible, allowing communities to add specific metadata fields relevant to their domain 
+    while maintaining core compatibility. This has led to fast and widespread adoption and the development of a rich ecosystem of tools and services that support STAC. 
+    \item \textbf{Cloud-Native Focus}: STAC is inherently cloud-native. It facilitates the creation of large-scale, dynamic catalogs of EO data that can be easily accessed and processed in the cloud, reducing data duplication and transfer costs.
+\end{itemize}
+
+The STAC specification consists of several core components:
+\begin{itemize}
+    \item \textbf{Item}: The fundamental unit in STAC, representing a single spatiotemporal asset (e.g., a satellite scene) described by its metadata and links to data files.
+    \item \textbf{Collection}: A group of related STAC Items that share common metadata, such as sensor type, processing level, or geographic region.
+    \item \textbf{Catalog}: A flexible structure that organizes STAC Collections and Items, often hierarchically, to facilitate browsing and discovery. Catalogs can link to other Catalogs, Collections, or Items.
+    \item \textbf{API}: STAC also defines an API specification (STAC API) that provides a \textit{standardized} way to query and serve STAC metadata \textit{over the web}. This allows for dynamic searching and filtering of large catalogs.
+\end{itemize}
+
+The shift towards STAC represents a paradigm change from traditional data download workflows to more dynamic, query-driven access. 
+Instead of downloading large, monolithic datasets, users can precisely identify and access only the data they need, often processing it in place and at scale in the cloud.
+This approach is critical for handling the ever-increasing volume of EO data (hundreds of TB's daily!) and enabling scalable, on-demand geospatial analysis. 
+The STAC ecosystem includes a variety of open-source tools that lower the barrier to adoption, such as \texttt{pystac} (Python library for creating and manipulating STAC objects), 
+\href{https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.amazonaws.com/events/catalog.json?.language=en}{STAC Browser} (web-based exploration of STAC catalogs), 
+and clients for various programming languages.
+
 
 \subsection{Discrete Global Grid Systems}
 % * Introduction to DGGS concepts.
@@ -66,7 +101,7 @@ Some relevant CV architectures include Convolutional Neural Networks (CNNs), Vis
 
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
-        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established baselines (e.g. UNet, FPN, PAN, etc.)
+        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
         \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
         We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar, to perform a global survey of PV installations that includes both large-scale farms and distributed rooftop PV systems.
         \item Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
