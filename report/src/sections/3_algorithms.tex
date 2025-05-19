@@ -1,6 +1,6 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{[CCOM6050] Adapting Spatial Hierarchical Clustering Algorithms to our application}
+\section{[CCOM6050] Spatial Hierarchical Clustering Algorithms applied to DGGS}
 \textbf{Here we will go into detail on our algorithm design and approach for optimization of STAC queries when generating our dataset.}
 \bigskip
 \end{center}
@@ -27,7 +27,7 @@ We convert all vector dataset files to GeoParquet format using \texttt{geopandas
 \end{itemize}
 
 This provides a space complexity reduction. For example, the cumulative size of the 5 datasets(cite) we worked with this semester was 690.5 MB in GeoJSON and GeoPackage formats, 
-while after consolidation and conversion to GeoParquet the size was reduced to 107.3MB. This is largely due to the compression capabilities of the Parquet format, from removing unused columns, 
+while after consolidation and conversion to GeoParquet the size was reduced to 107.3MB. This is largely due to the inherent compression capabilities of the Parquet format, from removing unused columns, 
 and filtering out invalid geometries. 
 
 \paragraph{Consolidation and Deduplication}
@@ -36,10 +36,10 @@ After standardizing individual datasets, we:
     \item Consolidate all datasets into a single DuckDB database with spatial extensions enabled
     \item Create a unified schema with standardized columns (geometry, area, source dataset, etc.)
     \item Perform spatial deduplication to remove overlapping polygons using spatial indices
-    \item For CV models, filter to only retain valid polygon geometries (POLYGON, MULTIPOLYGON) for segmentation training
+    \item For CV models, filter to only retain valid polygon geometries (POLYGON, MULTI-POLYGON) for segmentation training
 \end{enumerate}
 
-The running time for the deduplication process is reduced by using spatial indices. A sp 
+The running time for the deduplication process is reduced by using spatial indices as for each record we only need to compare nearby geometries as established by the spatial index.
 
 
 \paragraph{Geospatial Enrichment}
