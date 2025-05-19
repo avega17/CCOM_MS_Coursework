@@ -39,18 +39,17 @@ These publications and datasets have primarily focused on large-scale, utility-s
 typically located in remote areas with broad land availability and low land use conflicts. However, for some countries, land comes at a premium and concentrated large-scale solar energy installations are 
 either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts. This leads to countries where distributed, small-scale rooftop or building-integrated 
 PV solar energy installations make up a significant portion of the total installed capacity which is not captured in assessment limited to large-scale installations. 
-For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025} and Kruitwagen et al\cite{kruitwagen_global_inventory_pv_units_2021} use a $\ge$ 10KW 
-Additionally, intermittent renewable energy sources bring about a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale.
+For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025} and Kruitwagen et al\cite{kruitwagen_global_inventory_pv_units_2021} use a $\ge$ 10KW threshold for the solar arrays they are analyzing which 
+excludes most residential installations.  
 
-The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that national electric grid 
+Additionally, intermittent renewable energy sources bring about a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale. The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that national electric grid 
 supply and demand are balanced. PV solar energy is particularly sensitive to local weather conditions and received solar irradiance which can both be monitored using 
 remote sensing methods and local weather stations. There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
 the use of spectral reflectance features in Computer Vision (CV) models for PV solar array detection\cite{He_universal_pv_spectral_index_2024}, and advances in spatio-temporal data fusion methods to improve the temporal resolution of very-high-resolution (VHR) satellite imagery\cite{Tremenbert_Kasmi_pyPV_roof_2023}. 
 
-This project looks to outline the work required to address these interconnected challenges by tackling two core subproblems leveraging remote sensing data and advances in deep learning methods:
+This project looks to outline the work required to address these interconnected challenges by tackling three core subproblems leveraging remote sensing data and advances in deep learning methods:
     % \vfill\null
     % \columnbreak
-\end{multicols}
 
 \subsubsection{[CCOM6120] Subproblem 1:}
     \textbf{Detection and Segmentation of distributed rooftop PV Systems using Computer Vision baseline models} 
@@ -105,14 +104,6 @@ This project looks to outline the work required to address these interconnected 
         
 %     \end{enumerate}
     
-\subsection{Research Gaps and Contribution Goals}
-    \begin{enumerate}
-        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established baselines (e.g. UNet, FPN, PAN, etc.)
-        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
-        We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar, to perform a global survey of PV installations that includes both large-scale farms and distributed rooftop PV systems.
-        \item Almost all notable studies (with the exception of \[cite GloSoFarID\]) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
-        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
-        (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
-    \end{enumerate}
+
     \hfill
 % \lipsum[1]

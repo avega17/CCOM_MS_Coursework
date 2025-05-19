@@ -1,14 +1,14 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{[CCOM6050] Data Fusion Algorithms}
-\textbf{Here we will go into more detail and implement one traditional data fusion algorithm and another using Deep Learning methodology.}
+\section{[CCOM6050] Adapting Spatial Hierarchical Clustering Algorithms to our application}
+\textbf{Here we will go into detail on our algorithm design and approach for optimization of STAC queries when generating our dataset.}
 \bigskip
 \end{center}
 {\color{gray}\hrule}
 
 \begin{multicols}{2}
 
-\subsection{Data Ingestion and Preprocessing}
+\subsection{Data Ingestion and Pre-processing}
 
 % * Sources of PV solar panel label datasets (cite your aggregated sources).
 % * Cleaning, geometric validation, and deduplication techniques.
@@ -32,7 +32,7 @@
 % * Justification: Scalability for large numbers of H3 cells, memory efficiency.
 % * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
 
-\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and other methods}
+\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution}
 % * Algorithm(s):
 %     * RC-Tree Tracing (RCTT) (Dhulipala et al., 2024) for CPU-based parallelism.
 %     * PANDORA (Sao et al., 2024) for GPU-accelerated computation.
@@ -87,6 +87,9 @@
 %     \item Memory usage
 % \end{itemize}
 
+\clearpage
+
 \end{multicols}
 
 \clearpage
+

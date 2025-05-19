@@ -64,8 +64,18 @@ Some relevant CV architectures include Convolutional Neural Networks (CNNs), Vis
 % * Application of MSTs in clustering: identifying natural groupings by cutting edges.
 % * Advantages for spatial data: ability to find clusters of arbitrary shapes (Gagolewski et al., 2023).
 
+\subsection{Research Gaps and Contribution Goals}
+    \begin{enumerate}
+        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established baselines (e.g. UNet, FPN, PAN, etc.)
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
+        We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar, to perform a global survey of PV installations that includes both large-scale farms and distributed rooftop PV systems.
+        \item Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
+        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
+        (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
+    \end{enumerate}
 
 
+\end{multicols}
 
 
 % \subsubsection{Data Fusion}

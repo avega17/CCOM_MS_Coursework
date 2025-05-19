@@ -1,14 +1,14 @@
 {\color{gray}\hrule}
 \begin{center}
 \section{Methodology}
-\textbf{Here you will describe your:}
-\begin{itemize}
-    \item Experiments done and pending
-    \item Tools, software, code 
-    \item Data available (Description, source)
-    \item Results (if any)    
-\end{itemize} 
-Create a subsection for each part described in the methodology. These subsections can be modified based on the work or progress made during the current month. Additionally, you may create separate sections if needed, for example, to distinguish results based on different strategies. This template is flexible and can be adapted for better presentation.
+% \textbf{Here you will describe your:}
+% \begin{itemize}
+%     \item Experiments done and pending
+%     \item Tools, software, code 
+%     \item Data available (Description, source)
+%     \item Results (if any)    
+% \end{itemize} 
+% Create a subsection for each part described in the methodology. These subsections can be modified based on the work or progress made during the current month. Additionally, you may create separate sections if needed, for example, to distinguish results based on different strategies. This template is flexible and can be adapted for better presentation.
 
 \bigskip
 \end{center}
@@ -27,11 +27,11 @@ Create a subsection for each part described in the methodology. These subsection
         \item Dataset 1 - Description, source
         \item Dataset 2 - Description, source
     \end{itemize}
-\subsubsection{Preprocessing steps}
+\subsubsection{Pre-processing steps}
     
 
 \subsection{Implementation Details}
-\subsubsection{Python Libraries and other software}
+\subsubsection{Python Libraries and other computational tools}
 \begin{itemize}
     \item \textit{Python 3.10} - programming language  
     \item \textit{PyTorch 2.0} - deep learning framework  
@@ -47,9 +47,9 @@ Create a subsection for each part described in the methodology. These subsection
     \item \textit{rastervision} - a framework for computer vision and deep learning in remote sensing
     \item \textit{PyTorch Lightning} - a lightweight wrapper for PyTorch to help with training and testing
     \item \textit{TorchGeo} - a library for deep learning on geospatial data which includes datasets and pretrained models
-    \item \textit{super-gradients} - a library for transfer learning and training of SOTA CV models
-    \item \textit{data-gradients} - a library designed for computer vision dataset analysis and visualization
-    \item \textit{torchmetrics} - a library for computing metrics in PyTorch
+    % \item \textit{super-gradients} - a library for transfer learning and training of SOTA CV models
+    % \item \textit{data-gradients} - a library designed for computer vision dataset analysis and visualization
+    \item \textit{torchmetrics} - a library for computing model evaluation metrics in PyTorch
 \end{itemize}
 
 \subsubsection{Hardware and Compute Resources}
@@ -65,27 +65,35 @@ Create a subsection for each part described in the methodology. These subsection
 
 \subsubsection{Code Repository}
 
-At the end of the semester, the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_research}{private Github repo} where this report and associated code is hosted will be made public.
+As of writing, the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_research}{Github repo} where this report and associated code is hosted is public.
 
 \subsection{Evaluation}
-    \begin{itemize}
-        \item Goal(s): Assess accuracy of reconstructed time series 
-        \item Metrics (including their normalized versions):
+    % \begin{itemize}
+    %     \item Goal(s): Assess accuracy of reconstructed time series 
+    %     \item Metrics (including their normalized versions):
+    %     \begin{itemize}
+    %         \item RMSE (Root Mean Square Error)
+    %         \item MAE (Mean Absolute Error)
+    %         \item MAPE (Mean Absolute Percentage Error)
+    %         \item MBD (Mean Bias Deviation)
+    %         \item R2 (Coefficient of Determination)
+    %         \item PSNR (Peak Signal-to-Noise Ratio)
+    %         % validate which are useful for STF and regression tasks
+    %     \end{itemize}
+    %     \item Baseline(s):
+    %         \begin{itemize}
+    %             \item Persistence model 
+    %             \item Clear sky components
+    %         \end{itemize}
+    % \end{itemize}
+    \subsubsection{Computer Vision Models}
         \begin{itemize}
-            \item RMSE (Root Mean Square Error)
-            \item MAE (Mean Absolute Error)
-            \item MAPE (Mean Absolute Percentage Error)
-            \item MBD (Mean Bias Deviation)
-            \item R2 (Coefficient of Determination)
-            \item PSNR (Peak Signal-to-Noise Ratio)
-            % validate which are useful for STF and regression tasks
+            \item Dice Loss
+            \item mean Intersection over Union (mIoU): 
         \end{itemize}
-        \item Baseline(s):
-            \begin{itemize}
-                \item Persistence model 
-                \item Clear sky components
-            \end{itemize}
-    \end{itemize}
+
+    
+    
 
 \subsection{Expected Results}
 
