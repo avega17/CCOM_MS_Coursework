@@ -50,7 +50,7 @@ Some relevant CV architectures include Convolutional Neural Networks (CNNs), Vis
 % - Characteristics of PV arrays as seen from space (spectral, spatial).
 % - Brief overview of relevant sensor types (multispectral, VHR).
 
-\subsection{SpatioTemporal Asset Catalogs}
+\subsection{STAC}
 \label{subsec:stac} % Added label for cross-referencing
 
 A SpatioTemporal Asset Catalog (STAC) is a specification schema that provides a standardized, open, and interoperable way to describe and catalog geospatial information. 
@@ -88,7 +88,7 @@ The STAC ecosystem includes a variety of open-source tools that lower the barrie
 and clients for various programming languages.
 
 
-\subsection{Discrete Global Grid Systems}
+\subsection{DGGS and H3}
 % * Introduction to DGGS concepts.
 % * Specifics of H3: hexagonal, hierarchical, indexing capabilities (`h3.geo_to_h3`, `h3.k_ring`, `h3.grid_distance`).
 % * Rationale for using H3 as the foundational grid for spatial aggregation and analysis (Li et al., 2024, for grid-based significance thinking; 
@@ -125,27 +125,26 @@ H3 provides efficient functions for:
 \end{itemize}
 
 For this project, H3 is adopted as the foundational DGGS for several reasons. Firstly, its hierarchical indexing allows for flexible aggregation of Photovoltaic (PV) Point-of-Interest (PoI) data into discrete spatial units (H3 cells) at an appropriate resolution. 
-This aligns with the grid-based significance mapping concept explored by Li et al. (2024) for optimizing Earth observation tasks, although here we adapt it for analyzing historical/archive data. 
+This aligns with the grid-based significance mapping concept explored by Li et al. (2024) for optimizing \textit{future} Earth observation tasks\cite{Li_H3_EO_planning_2024}, although here \textit{we instead adapt it for analyzing historical/archival data}. 
 Secondly, the consistent grid structure and defined neighborhood relationships are naturally conducive to graph-based spatial clustering, where \textbf{H3 cells become nodes in a Minimum Spanning Tree (MST)}. 
 The \texttt{h3.grid\_distance} function provides a natural and computationally efficient metric for defining proximity between these H3 cell nodes. 
-While spatio-temporal and dynamically-adaptive grid systems like HierGP (cite Oje et al., 2025) and others offer dynamic partitioning based on data characteristics and demonstrate strong performance in certain benchmarks, H3's 
-global consistency, well-defined hierarchy, and mature software tooling make it a robust choice for developing a standardized analytical framework for our research. 
+While spatio-temporal and dynamically-adaptive grid systems like HierGP (cite Oje et al., 2025) \cite{Oje_HierGP_ST_2025} and others offer dynamic partitioning based on data characteristics and demonstrate strong performance in certain benchmarks, H3's 
+second-place performance in that same publication, global consistency, well-defined hierarchy, and, particularly, mature software tooling make it a robust choice for developing a standardized analytical framework for our research. 
 The unique cell IDs provided by H3 also facilitate efficient data management and linkage between PV locations, derived clusters, and corresponding STAC assets as we'll describe in our Algorithms section.
 
-\subsection{Minimum Spanning Trees for Spatial and Hierarchical Clustering}
+\subsection{Hierarchical-Spatial Clustering}
 % * Concept of MSTs in graph theory.
 % * Application of MSTs in clustering: identifying natural groupings by cutting edges.
 % * Advantages for spatial data: ability to find clusters of arbitrary shapes (Gagolewski et al., 2023).
+Spatial Clustering groups data points based on their spatial proximity. 
+Hierarchical clustering methods group data points into a tree-like structure of clusters, which is particularly useful for understanding multi-scale patterns in data. 
+Hierarchical-Spatial clustering combines both concepts, creating a hierarchy of clusters based on spatial relationships between data points and is particularly useful for analyzing \textit{large-scale geospatial data}.
+Minimum Spanning Trees offer a powerful and versatile approach to achieve this.
 
-Hierarchical clustering methods group data points into a tree-like structure of clusters, which is particularly useful for understanding multi-scale patterns in data. When applied to geospatial data, this is known as hierarchical spatial clustering, which creates a hierarchy of clusters based on spatial relationships. Minimum Spanning Trees (MSTs) offer a powerful and versatile approach to achieve this.
-
-\subsection{Fundamentals of MST-based Clustering}
+\subsubsection{Fundamentals of MST-based Clustering}
 A Minimum Spanning Tree (MST) of \textit{a connected, undirected graph is an acyclic subgraph that connects all vertices} (data points) with the minimum possible total edge weight. 
-In the context of clustering, edge weights typically represent distances or dissimilarities between data points. As noted by Zaslavskiy et al. in "Clustering with Minimum Spanning Trees: How good can it be?"\cite{}, 
-% MSTs provide a natural representation of datasets for clustering, for example, by deleting the longest edges in the MST (i.e. the most distant or dissimilar points) you can partition the graph into k connected components, which can be interpreted as k distinct clusters.
-% This approach is particularly effective for identifying clusters of varying densities and shapes, as it \textit{does not rely on strong assumptions about the data distribution, convexity or apriori knowledge like the number of clusters}.
-
-Key properties and advantages of using MSTs for clustering include:
+In the context of clustering, edge weights typically represent distances or dissimilarities between data points. As noted by Zaslavskiy et al. in "Clustering with Minimum Spanning Trees: How good can it be?"\cite{gagolewski_MST_Clustering_how_good_2024}, 
+MST's provide some key properties and advantages for hierarchical-spatial clustering including:
 \begin{itemize}
     \item \textbf{Natural Cluster Representation:} An MST for $n$ points always has $n-1$ edges. Removing $k-1$ of the longest or most inconsistent edges from an MST partitions the graph into $k$ connected components, which can be interpreted as $k$ distinct clusters.
     \item \textbf{Detection of Arbitrary Cluster Shapes:} Unlike methods like K-means that assume convex clusters, MST-based approaches can effectively identify clusters of varying densities and arbitrary shapes.
@@ -159,7 +158,8 @@ Classical algorithms for MST construction include \textit{Borůvka's}, \textit{P
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
         \item Measure performance impact of SOTA Computer Vision architectures [CCOM6120] (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
-        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use open access catalogs from VHR MSI sensors, primarily from Maxar and Sentinel2, and other STAC archives to as the source for a data pipeline that will generate a large-scale global dataset of PV installations and \textbf{design algorithms for efficiently retrieving, storing, and processing this data at scale} [CCOM6050] . 
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use open access catalogs from VHR MSI sensors, 
+        primarily from Maxar and Sentinel2, and other STAC archives to as the source for a data pipeline that will generate a large-scale global dataset of PV installations and \textbf{design algorithms for efficiently retrieving, storing, and processing this data at scale} [CCOM6050]. 
         The resulting dataset will be used as training data for CV models that can be used to perform a global survey of PV installations that includes both large-scale commerical and utility-scale ``solar farms'' and smaller-scale distributed rooftop PV systems.
         \item Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors [CCOM6050]. 
         \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies 
@@ -168,27 +168,3 @@ Classical algorithms for MST construction include \textit{Borůvka's}, \textit{P
 
 
 \end{multicols}
-
-
-% \subsubsection{Data Fusion}
-
-% \begin{enumerate}
-%     \item Definition: combining data from multiple sources to achieve improved information quality or inference compared to using sources individually\cite{Castanedo_trad_data_fusion_2013} 
-%     \item (Geospatial) Coherence\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}
-%     \item Remote Sensing Fusion types\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}\cite{Li_DL_multimodal_RS_data_fusion_review_2022}
-%     \begin{itemize}
-%         \item Spatio-Spectral Fusion: Enhancing spectral resolution using spatial information (e.g., Pansharpening) or vice versa.\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019}\cite{Zhang_panchromatic_and_msi_fusion_for_RS_and_EO_2023}
-%         \item Spatio-Temporal Fusion: Combining high spatial resolution/low temporal frequency data with low spatial resolution/high temporal frequency data to generate a fused dataset with 
-%         high resolution in both domains.\cite{Ghamisi_Multisource_and_Multitemporal_Data_Fusion_in_Remote_Sensing_2019} \textbf{This is the core fusion type for the second subproblem of this project}. 
-%     \end{itemize}
-%     \item Data Fusion Abstraction Levels\cite{Hussain_DL_Data_Fusion_review_2024}
-%     \begin{itemize}
-%         \item Early fusion (pixel/signal level): Combining raw sensor data directly 
-%         \item Intermediate fusion (feature level): Extracting relevant features from each sensor first and then combining them
-%         \item Late fusion (symbol/decision level): Each source produces an independent decision, which is then combined to produce a final output
-%         % \item Hybrid fusion (combination of levels)
-%     \end{itemize}
-%     \item  A review from Castanedo\cite{Castanedo_trad_data_fusion_2013} also categorizes fusion based on the relationship between data sources (complementary, redundant, cooperative)
-%     \item The rise of Deep Learning (DL) has significantly impacted the field, with reviews listing CNNs, LSTMs, GANs, and Transformers as the most relevant architectures for data fusion\cite{Li_DL_multimodal_RS_data_fusion_review_2022}\cite{Hussain_DL_Data_Fusion_review_2024}.
-% \end{enumerate}
-

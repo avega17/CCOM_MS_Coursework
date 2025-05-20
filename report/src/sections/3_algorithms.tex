@@ -1,15 +1,15 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{[CCOM6050] Spatial Hierarchical Clustering Algorithms applied to DGGS}
+\section{[CCOM6050] Spatial Hierarchical Clustering applied to DGGS: Algorithms and Complexity}
 \textbf{Here we will go into detail on our algorithm design and approach for optimization of STAC queries when generating our dataset.}
 \bigskip
 \end{center}
 {\color{gray}\hrule}
 
-\begin{multicols}{2}
+% \begin{multicols}{2}
 
 \subsection{Data Ingestion and Pre-processing}
-% * *(Potential for Map Point Reduction (MPR) inspired by Oje et al., 2025, if initial PV data is excessively dense/redundant before H3 aggregation).*
+\label{subsec:data_ingestion}
 
 \paragraph{Dataset Acquisition and Management} 
 We download PV installation datasets from various academic repositories including Zenodo, figshare, GitHub, and ScienceBase. 
@@ -20,10 +20,10 @@ and custom functions for GitHub-hosted datasets. Dataset metadata is stored in a
 \paragraph{Standardization to GeoParquet}
 We convert all vector dataset files to GeoParquet format using \texttt{geopandas}. GeoParquet extends the Apache Parquet columnar storage format with geospatial capabilities, providing significant advantages:
 \begin{itemize}
-    \item \textit{Efficient storage} with built-in compression, reducing file sizes by up to 10x compared to GeoJSON
+    \item \textit{Efficient storage} with built-in compression, reducing file sizes compared to GeoJSON and other spatial vector formats
     \item \textit{Columnar storage format} optimized for analytical queries and filtering operations
-    \item \textit{Spatial indexing and predicate pushdown} capabilities for efficient geospatial operations
-    \item \textit{Wide ecosystem compatibility} with modern geospatial data tools
+    \item \textit{Spatial indexing and predicate pushdown} capabilities for efficient geospatial operations over supported geometry types
+    \item \textit{Wide ecosystem compatibility} with modern geospatial and cloud-optimized tools and workflows
 \end{itemize}
 
 This provides a space complexity reduction. For example, the cumulative size of the 5 datasets(cite) we worked with this semester was 690.5 MB in GeoJSON and GeoPackage formats, 
@@ -65,137 +65,157 @@ which we use to index the PV dataset and perform spatial operations.
     \item Spatial joins with geospatial data layers (Overture Maps) using H3 indices as common keys
 \end{enumerate}
 
+\subsection{Graph Construction from H3 Grid Cells for MST [Future Work]}
 
-% * Algorithm for assigning PV labels to H3 cells at a chosen resolution.
-%     * Discussion on selecting H3 resolution(s).
-% * Derivation of H3 cell-level features (e.g., PV count, total PV area, installation date statistics).
-% * *(Optional: Augmentation with Overture Maps Land Cover or other STAC-derived features per H3 cell).*
-
-\subsection{Mutual Reachibility Graph from H3 Grid Cells [Future Work]}
 A Mutual Reachibility Graph (MRG) is an undirected, weighted graph where each node represents a point in the dataset and edges represent the mutual reachability distance between points.
-As one of the first steps in our clustering algorithm, we will create a MRG using the centroids of the H3 grid cells containing PV installations instead of the raw input data points $P$.
-One advantage this provides is that spatially close PV installations are contained within the same H3 cell, which means we turn our set of raw input data points $P$ into a much smaller set of H3 cells $C$ that contain the PV installations.
-This greatly reduces the number of points we need to consider when building our graph depending on the desired resolution of the H3 cells.
-For the MRG edge weights, we use the H3 grid distance between cells $c_a$ and $c_b$ as our mutual reachability distance $d_{MRG}(c_a, c_b)$ metric. 
-To reduce the number of edges we need to consider, we can limit the number of neighbors we consider  to only the $k$ nearest neighbors or only those within a certain H3 distance. 
-A naive approach would be to compute the distance between all pairs of H3 cells, which would take $O(N^2)$ time, where $N$ is the number of H3 cells with PV installations.
-However, this can be mitigated by for each cell $c_a$ only considering the $k$ nearest neighbors or neighbors within a fixed H3 distance to reduce the number of edges we need to compute. 
-This is particularly critical for tree construction algorithms like Kruskal's or Prim's, whose runtimes scales based on the number of edges we are considering for graph construction.
+The foundation for our hierarchical spatial clustering is a graph $G=(V, E_w)$, where the set of vertices $V$ represents H3 grid cells containing PV installations, and $E_w$ is the set of weighted edges quantifying the proximity between these cells.
 
-Nodes: H3 cells containing PV installations at a specified resolution.
-Edges: "Path" of adjacent H3 grid cells that connect two H3 cells.
-Edge Weight Metric: h3.grid\_distance(cell\_a, cell\_b) to define topological proximity. 
-This integer distance (number of hops) will be the primary factor for MST construction, prioritizing connectivity.
-% MST Edge Representation: While the MST algorithm operates on these weights, for later use (especially negative sampling), the paths corresponding to MST edges are also considered. For an MST edge connecting cell_A and cell_B, the sequence of H3 cells forming this direct connection can be materialized using h3.grid_path_cells(cell_A, cell_B). These "path cells" represent the immediate spatial context between clustered PV cells.
+\paragraph{Node Definition}
+Instead of the set of raw input data points, the geometric centroids of each unique H3 cell that contains one or more PV PoIs at a chosen analysis resolution (e.g., $res_A$) becomes a node $v \in V$. Let $N = |V|$ be the total number of such H3 cells.
 
-Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance for initial graph formation before MST).
-% * Algorithm: Mutual Reachability Graph (MRG) construction.
-% * Nodes: H3 cells containing PV installations.
-% * Edge Weight Definition:
-%     * Primary: `h3.grid_distance(cell_a, cell_b)` to define topological proximity.
-%     * *(Discussion of potential hybrid approaches if feature similarity is incorporated).*
-% * Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance).
+\paragraph{Edge Weight Definition}
+The primary metric for defining the weight (or "distance") between any two H3 cell nodes, say $c_a$ and $c_b$, is the H3 grid distance: $w(c_a, c_b) = \texttt{h3.grid\_distance}(c_a, c_b)$. 
+This function returns the shortest number of steps (hops) on the H3 grid required to move from $c_a$ to $c_b$.
+\begin{itemize}
+    \item This topological (i.e. not geometric) distance inherently captures spatial adjacency and connectivity within the H3 grid structure. 
+    The \texttt{h3.grid\_distance} function itself is efficient and can be considered $O(1)$ constant time for a single pair\cite{H3_Algorithm1}, typically operating in constant time or time proportional to the distance, as it relies on arithmetic and geometric operations on cell IDs.
+    \item Using \texttt{h3.grid\_distance} directly as the edge weight prioritizes connecting H3 cells that are close in terms of grid topology for the MST.
+\end{itemize}
+% While this is the primary metric, future work could explore hybrid weighting schemes that incorporate feature similarity between H3 cells (e.g., similarity in PV density, installation dates, or STAC-derived land cover characteristics) in addition to the grid distance.
+
+\paragraph{Graph Sparsification for Scalability}
+A naive approach to constructing a complete graph with edges between all $N$ H3 cells would require computing $O(N^2)$ edge weights, making MST computation intractable for large $N$. Therefore, graph sparsification is essential:
+\begin{enumerate}
+    \item \textbf{$k$-Ring Neighbors:} For each H3 cell $c_i$, consider only edges to its immediate H3 neighbors within a small $k$-ring (e.g., using \texttt{h3.k\_ring(}$c_i$\texttt{, k\_val)} where $1 \geq k' \leq 3$). 
+    This bounds the number of candidate edges to $O(N \cdot 7^{k'})$ where N is the number of H3 cells with PV installations and further bounded by only considering grid cells with PV installations.
+    \item \textbf{Maximum H3 Distance Threshold:} Alternatively, consider edges only between H3 cells $c_a, c_b$ if $\texttt{h3.grid\_distance}(c_a, c_b) \leq D_{\max}$, where $D_{\max}$ is a predefined maximum H3 distance. 
+    The number of edges here would depend on the spatial distribution of PV-containing H3 cells and $D_{\max}$.
+\end{enumerate}
+These sparsification strategies significantly reduce the number of edges ($E_{sparse}$) in the graph, typically to $O(N \cdot \text{avg\_degree})$, making subsequent MST algorithms (like Kruskal's or Prim's, which scale with the number of edges) computationally feasible. 
+The choice of sparsification parameters ($k'$ or $D_{\max}$) involves a trade-off between computational cost and the fidelity of the resulting MST compared to one built on a complete graph.
+The resulting sparse, weighted graph of H3 cells is the direct input to the MST construction algorithms. 
 
 \subsection{MST Construction: Running Time and Parallel Optimizations [Future Work]}
 % * Algorithm: Parallel GeoFilterKruskal (GFK) with MemoGFK optimization (Wang et al., 2021).
 % * Justification: Scalability for large numbers of H3 cells, memory efficiency.
 % * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
-
 \label{subsec:mst_construction}
 
-Once the H3 cells PV data points are identified and the graph nodes are defined (H3 cell centroids) with edge weights based on \texttt{h3.grid\_distance}, the next crucial step is the construction of a Minimum Spanning Tree (MST). The MST will form the backbone for the subsequent hierarchical clustering and dendrogram generation (in \cite{Wang_Yu_Gu_Shun_2021}). Therefore we need efficient algorithms for MST construction, especially given the potentially large number of H3 cells ($N$) involved in a global or regional analysis despite the reduction in...
+Once the sparse graph of H3 cells $G=(V, E_{sparse})$ is constructed, the next crucial step is the construction of a MST. 
+The MST will form the backbone for the subsequent hierarchical clustering and dendrogram generation as described in \cite{Wang_Yu_Gu_Shun_2021}. 
+Therefore we need efficient algorithms for MST construction, especially given the potentially large number of H3 cells ($N$) involved in a global or regional analysis.
 
+\paragraph{Classic MST Algorithms and Complexity}
+Several classic algorithms are foundational for MST construction on a graph with $N$ vertices and $E_{sparse}$ edges:
+\begin{itemize}
+    \item \textbf{Kruskal's Algorithm:} Sorts all $E_{sparse}$ edges by weight and adds them if they connect two previously unconnected components. Complexity: $O(E_{sparse} \log E_{sparse})$ or $O(E_{sparse} \log N)$ using a Union-Find data structure.
+    \item \textbf{Prim's Algorithm:} Grows the MST from a start vertex, iteratively adding the cheapest edge to an unvisited vertex. Complexity: $O(E_{sparse} \log N)$ with a binary heap, or $O(E_{sparse} + N \log N)$ with a Fibonacci heap.
+    \item \textbf{Boruvka's Algorithm:} Iteratively adds the minimum weight edge incident to each component. Complexity: $O(E_{sparse} \log N)$, and is inherently parallelizable.
+\end{itemize}
+Given our graph sparsification, where $E_{sparse}$ is typically $O(N)$ (e.g., when using $k$-ring neighbors with small $k'$), these algorithms become significantly more tractable. For example, Kruskal's algorithm would have a complexity of roughly $O(N \log N)$.
 
+\paragraph{Parallel Optimizations for EMST and Adaptations for H3 Graphs}
+For Euclidean Minimum Spanning Trees (EMST) on point data, where the graph is implicitly dense, Wang et al. (2021) proposed parallel algorithms using Well-Separated Pair Decompositions (WSPDs) to reduce effective pairs to $O(N)$, and a parallel GeoFilterKruskal (GFK)\cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. 
+Their parallel EMST algorithm achieves $O(N^2)$ work in constant dimensions but, importantly, has a polylogarithmic depth, $O(\log^2 N)$, (i.e., the longest series of sequential operations in the parallel algorithm) enabling substantial parallel speedups. 
 
-\paragraph{Strategies for Dense or Geometric Graphs: The EMST Case}
-For Euclidean Minimum Spanning Trees (EMST), where points exist in a geometric space, the graph is also \textit{implicitly dense}. Wang et al. (2021) address this by leveraging Well-Separated Pair Decompositions (WSPDs) \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. A WSPD reduces the number of effective "pairs" (and thus potential edges) to consider from $N^2$ to $N$. They then apply a parallelized version of Kruskal's algorithm, termed GeoFilterKruskal (GFK). Their parallel EMST algorithm achieves $O(N^2)$ work in constant dimensions but, importantly, has a polylogarithmic depth ($O(\log^2 N)$), enabling substantial parallel speedups. 
-% A key contribution of Wang et al. is the \textbf{MemoGFK optimization}. Instead of materializing the full WSPD (which can still be memory-intensive), MemoGFK dynamically traverses a k-d tree (built on point coordinates) in rounds, retrieving only WSPD pairs whose connecting edges are likely to be part of the MST within specific weight ranges. This significantly reduces both memory footprint (up to 10x) and computation time (up to 8x) in practice \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. 
-
-
-\paragraph{MST Construction with H3 \texttt{grid\_distance}}
-In our work, edge weights are primarily defined by \texttt{h3.grid\_distance}, which is \textit{a topological grid distance rather than a Euclidean one}. For their HDBSCAN* variant, the authors construct an MST based on a MRG as described above where edge weights incorporate a "core distance" metric reflecting local density. 
+For our H3 graph, which is already sparse due to the strategies in Section \ref{subsec:graph_construction_h3}:
 \begin{enumerate}
-    \item \textbf{Graph Sparsification:} To avoid the $O(N^2)$ complexity, we first construct a sparse graph. For each H3 cell $c_i$ containing PV installations, we only consider edges to its neighbors. Neighbors can be defined as:
-    \begin{itemize}
-        \item H3 cells within a small $k$-ring (e.g., using \texttt{h3.k\_ring(cell, k\_val)} for $k' = 1 \text{ or } 2$).
-        \item H3 cells within a maximum \texttt{h3.grid\_distance} threshold.
-    \end{itemize}
-    This reduces the number of edges $E_{sparse}$ to approximately $O(N \cdot \text{avg\_degree})$, where the average degree is relatively small and constant (e.g., 6 for $k'=1$ in H3)
-    \item \textbf{Applying MST Algorithms on Sparse Graph:} Once the sparse graph with $E_{sparse}$ edges is constructed with \texttt{h3.grid\_distance}, standard MST algorithms can be applied more efficiently. For instance, Kruskal's algorithm would have a complexity related to $O(E_{sparse} \log E_{sparse})$ or $O(E_{sparse} \log N)$.
-    \item \textbf{Parallel Optimizations:}
-        \begin{itemize}
-            \item Parallel versions of Kruskal's (e.g., using parallel sort and parallel Union-Find operations) or Boruvka's algorithm are well-suited for this sparse graph.
-            \item The GFK algorithm in \cite{Wang_Yu_Gu_Shun_2021}...
-        \end{itemize}
+    \item Parallel versions of Kruskal's (like the author's Parallel GFK) or Boruvka's algorithm are directly applicable and offer good performance.
+    \item The principle of Wang et al.'s GFK/MemoGFK (processing edges in batches based on weight ranges) can still be beneficial for managing memory and improving cache efficiency if $E_{sparse}$ remains very large (e.g., for global-scale analysis with a high average degree after sparsification).
 \end{enumerate}
-The choice of sparsification strategy (e.g., $k'$ for $k$-ring) will be a trade-off between graph density (and thus MST computation time) and ensuring the true MST based on all pairwise H3 distances is captured or closely approximated. However, as the authors showed in their runtime decomposition figure, the MST Construction step has by far the shortest running time compared to the WSPD and Dendogram computations.
-
-\paragraph{Justification and Importance}
+As the authors showed in their runtime decomposition figure, the MST Construction step has by far the shortest running time compared to their WSPD and Dendogram algorithms.
 The effort in constructing the MST efficiently is well-justified as the relatively fast computation of MSTs, especially with parallel and memory optimizations on sparse graphs, makes this approach viable for large-scale, planetary datasets of H3 cells.
-% If adapting such a density-based approach to our H3 cells, the definition of core distance for an H3 cell (e.g., based on its PV content and the content of its H3 neighbors) and the specialized well-separation criteria proposed by Wang et al. would be relevant for constructing this specific type of MST \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}.
 
+\subsection{Generating a Hierarchy of Clusters: Dendrogram Construction and H3 Multi-resolution}
+\label{subsec:dendrogram_construction}
 
+Following construction of the MST from H3 cells, the next step is to derive a hierarchy of clusters. 
+This is achieved by generating a dendrogram, which visually and structurally represents the nested groupings of H3 cells based on their proximity or similarity as captured by the MST. 
+The dendrogram is fundamental to hierarchical clustering, allowing for the exploration of cluster structures at various levels of granularity and informing our selection of STAC raster assets.
 
-\subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution [Future Work]}
+\paragraph{Dendrograms from MSTs}
+A single-linkage dendrogram can be directly constructed from an MST. Conceptually, if MST edges are sorted by weight (e.g., \texttt{h3.grid\_distance}), the dendrogram represents 
+the sequence of merges (in an agglomerative sense) or splits (in a divisive sense) of H3 cells. Each internal node in the dendrogram corresponds to an edge in the MST, and 
+its height in the dendrogram is typically proportional to the weight of that edge. Cutting the dendrogram at a certain height yields a flat partitioning of the H3 cells into $k$ clusters.
 
-% * Algorithm(s):
-%     * RC-Tree Tracing (RCTT) (Dhulipala et al., 2024) for CPU-based parallelism.
-%     * PANDORA (Sao et al., 2024) for GPU-accelerated computation.
-% * Justification: Work-optimality (or near-optimality), practical speedups, robustness to dendrogram skew.
+\paragraph{Efficient Dendrogram Construction}
+Traditionally, dendrograms are built sequentially, often using a Union-Find data structure, which for large $N$ (number of H3 cells) can be a bottleneck ($O(N \log N)$ but serial). 
+For the scope of this project, we briefly highlight the development of parallel algorithms for Single-Linkage Dendrogram (SLD) computation that offer improved theoretical guarantees and practical speedups. 
+For instance, algorithms by Dhulipala et al. (2024) achieve $O(N \log h)$ work (where $h$ is dendrogram height) with practical CPU implementations like RC-Tree Tracing (RCTT) \cite{dhulipala_Optimal_Parallel_Dendrogram_2024}. 
+Furthermore, PANDORA (Sao et al., 2024) provides a work-optimal ($O(N \log N)$) GPU-accelerated approach robust to skewed dendrograms \cite{sao_PANDORA_GPU_Dendrogram_2024}. 
+The use of such efficient methods is crucial for handling the scale of H3 cell datasets derived from global PV PoIs, ensuring the dendrogram generation step does not act as a bottleneck for the overall workflow 
+as shown in Wang et al.'s runtime decomposition figure \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021} below.
 
 \subsection{Optimized STAC Querying [Future Work]}
-The primary goal of the proposed H3-cell based hierarchical clustering algorithm is not simply to aid in our clustering process, but
-% * Algorithm for generating STAC query parameters (bounding boxes, geometries, time ranges) based on the identified H3 cell cluster footprints.
-% * Strategy for minimizing redundant queries (e.g., merging overlapping cluster query geometries).
 
-% \lipsum[1][10-15]
+\paragraph{Integrating H3 Hierarchy for Optimized STAC Asset Selection and Coverage}
+The primary focus is on leveraging the resulting hierarchy in conjunction with H3's hierarchical capabilities to efficiently generate the MST-based geometries used for querying STAC assets.
+While the MST-derived dendrogram provides a \textit{data-driven hierarchy} of PV-containing H3 cells, Uber H3's native hierarchical functions are instrumental in \textbf{relating these clusters to STAC raster asset extents and administrative boundaries} (e.g., countries). 
+This integration is key to optimizing the selection of STAC assets to maximize PV coverage while minimizing data redundancy for initial querying, and then enabling selective accumulation of imagery for analysis.
 
-% \subsubsection{Statistical STF algorithm candidates}
-% (add citations)
+\begin{enumerate}
+    \item \textbf{Representing STAC Raster Footprints with H3 and joining with PV H3 cells:}
+        For each candidate STAC raster Item, its geographic footprint (a bounding box polygon) is converted into a set of H3 cells at a chosen base analysis resolution (e.g., $res_A$) using the \texttt{h3.polygon\_to\_cells(h3shape, res)} function. 
+        This creates a \textit{discrete, gridded representation of each raster's coverage}.
 
-% \begin{itemize}
-%     \item Weight Function-based methods
-%         \begin{enumerate}
-%             \item STARFM (Spatial and Temporal Adaptive Reflectance Fusion Model): \\
-%             One of the earliest and most widely used methods. It assumes land cover change is minimal between image acquisition dates  
-%             (ok for our application) and uses spectral similarity and spatial distance to weight contributions from known fine-resolution 
-%             pixels to predict reflectance for dates where only coarse imagery is available. 
-%             \item ESTARFM (Enhanced STARFM): \\
-%             An extension of STARFM designed to perform better in heterogeneous landscapes by considering spectral unmixing concepts implicitly 
-%             and using conversion coefficients derived from two fine/coarse image pairs before and after the desired prediction date. 
-%         \end{enumerate}
-%     \item Unmixing-based methods
-%         \begin{enumerate}
-%             \item STDFA (Spatio-Temporal Data Fusion Approach): \\
-%             Combines spectral unmixing and spatial interpolation to predict fine-resolution reflectance. 
-%         \end{enumerate}
-%     \item Regression-based methods
-% \end{itemize}
+    \item \textbf{Contextualizing Raster H3 Cells with AOI Geometries:}
+        The H3 cells derived from STAC raster polyfills of H3 cells are then spatially intersected with the geometry of an Area-of-Interest (AOI) (from Overture Maps \textit{division\_area} theme) which we convert to H3 Cells using the same function. 
+        This step identifies, for each AOI, the subset of H3 cells from each overlapping raster that falls within its boundaries. We specifically only track raster-derived H3 cells that also correspond to H3 cells containing our PV PoIs. 
+        In this way we can capture only the "cells of Interest" (COIs) for each STAC raster item and AOI.
+        \\
+        % [insert polygon\_to\_cells example figure from tutorial]
+        \\
+        Since we are simply accumulating counts and logging raster item ID's to each H3 cell, these operations lend themselves to simple SQL aggregation queries in \texttt{duckdb} using the available H3 duckdb bindings. 
+        This lets us trivially vectorize and parallelize the aggregation process over vast STAC collections once the STAC catalogs \texttt{json} files are retrieved. 
+        This can be further optimized by converting STAC \texttt{json} collections to geoparquet using \texttt{stac-geoparquet} which allows for efficient processing and analytics over STAC items in bulk. 
 
-% \subsubsection{Deep Learning STF algorithm candidates}
-% \begin{itemize}
-%     \item CNN-based methods
-%     \item GAN-based methods
-% \end{itemize}
+    \item \textbf{Optimizing Raster Coverage Representation using \texttt{h3.compact\_cells()}:}
+        \textit{For each STAC raster asset}, its set of H3 cells (derived and filtered as described above) can be further optimized.
+        The \texttt{h3.compact\_cells()} function takes this set of fine-resolution H3 cells and returns a \textit{minimal set of H3 cells}, at coarser (parent) resolutions if all children cells are present, that \textit{approximately cover the original set of cells}.
+        This creates \textbf{a concise, multi-resolution representation of each raster's effective coverage of PV POIs within a given AOI}. 
+        This is particularly useful as, for our usecase, STAC asset footprints (i.e. satellite image strips over a curved surface) are often irregular and may not align neatly with a single H3 resolution. 
 
-% \subsection{Implementation}
-% (add links to colab jupyter notebooks) \\
-% (add essential code excerpts to highlight algorithm details)
+    \item \textbf{Relating Compacted Raster Representations to H3-MST Clusters:}
+        The H3-MST and its derived dendrogram define clusters of PV-containing H3 cells themselves contained within a given division geometry. 
+        The core optimization problem is to select a minimal subset of STAC rasters (represented by their compacted H3 cells footprints) that collectively maximize coverage over these PV H3 cells and the broader AOI being surveyed for PV development.
+        \begin{itemize}
+            \item The dendrogram provides a hierarchical view of PV cluster significance and spatial scale. Broad, extensive clusters (higher in the dendrogram, formed by merging along higher-weight MST edges) 
+            can guide the selection of STAC items that offer wide-area coverage, represented by larger or more numerous compacted H3 cells.
+            \item Finer, more localized clusters (lower in the dendrogram) help ensure that STAC items providing more granular or specific coverage are also considered, particularly if broad coverage assets miss these details.
+            \item The selection process thus becomes a guided search, where the H3-MST cluster structure informs the value (in terms of PV coverage) of including a particular STAC asset in our collection for further analysis. 
+            The emphasis is on achieving comprehensive coverage by potentially multiple rasters over the same H3 cells, rather than strict minimization of overlap if these overlaps provide valuable temporal or quality variance (e.g. cloud cover, sun angle, sensor resolution). 
+        \end{itemize}
 
-% \subsection{Complexity Analysis}
+    \item \textbf{Iterative Asset Selection, Coverage Maximization, and Training Data Curation:}
+        An iterative approach is employed to build a collection of relevant STAC assets and curate training data from the "stack" of imagery available for each H3 cell of interest:
+        \begin{enumerate}
+            \item \textbf{Initial Asset Identification:} Identify STAC rasters whose compacted H3 representations cover high-priority PV clusters (or a large number of PV-containing H3 cells). For each such H3 cell, associate all STAC raster Items that cover it.
+            \item \textbf{Iterative Coverage Expansion \& Accumulation:} Iteratively identify additional STAC rasters to ensure comprehensive coverage of all PV clusters and individual PV H3 cells. 
+            For each H3 cell, accumulate a list of all STAC Items that provide coverage. This allows for building a "stack" of observations for each H3 cell, rather than discarding overlapping rasters.
+            \item \textbf{H3 Hierarchy for Coverage Assessment:} During this process, H3 functions like \texttt{h3.h3\_to\_parent()} and \texttt{h3.cell\_to\_children()} assist in understanding the multi-scale coverage provided by the accumulated STAC assets for each PV H3 cell and cluster. 
+            This can help in summarizing the available imagery at different granularities.
+            \item \textbf{Curating Positive and Negative Training Samples from Accumulated Assets:}
+            \begin{itemize}
+                \item \textbf{Positive Samples:} For each PV-containing H3 cell, multiple STAC raster assets might provide coverage. 
+                From this "stack" of observations, select the best quality image chip(s) for training. Selection criteria can be based on STAC item metadata (e.g., minimizing cloud cover, specific date ranges, optimal sun azimuth/elevation angles, desired sensor type, or spatial resolution). 
+                \item \textbf{Negative Samples (Hard Negatives):} To improve the robustness of downstream Computer Vision models to false positives, spatially correlated negative samples are crucial\cite{kruitwagen_global_inventory_pv_units_2021, robinson_ms_planet_global_renewables_watch_2025, yang_GloSoFarID_2024}\cite{feng_10m_S2_China_2024}. 
+                These are generated by:
+                    \begin{enumerate}
+                        \item \textbf{Materializing MST Edge Paths:} For edges in the H3-MST connecting two PV-containing H3 cells (say \texttt{cell\_A} and \texttt{cell\_B}), materialize the path of H3 cells between them using \texttt{h3.grid\_path\_cells(cell\_A, cell\_B)}. These "edge path cells" represent the immediate spatial context and are less likely to contain primary PV installations themselves. 
+                        "Thin" edges in the MST (those connecting H3 cells at the finest analysis resolution, implying close \texttt{h3.grid\_distance}) are particularly good candidates for sourcing negative samples as they are likely to be visually similar to the PV cells they connect but not contain PV installations.
+                        \item \textbf{Selecting Imagery for Negative Samples:} Identify which of the accumulated STAC raster assets cover these materialized edge path H3 cells. From the "stack" of observations for these negative sample H3 cells, sample suitable image chips. 
+                        \item \textbf{Optional Refinement:} Further refine these negative samples by applying simple scene classification model or CV template matching against nearby confirmed PV arrays to ensure they represent "hard negatives" 
+                        (areas that might share some visual characteristics with PV sites but are not). 
+                    \end{enumerate}
+            \end{itemize}
+        \end{enumerate}
+        The aim of this iterative process is to \textbf{efficiently gather a comprehensive collection of STAC raster assets covering all PV areas of interest} and, from this collection, to curate a high-quality, diverse set of image chips for both 
+        positive (PV-containing H3 cells) and negative (contextual/edge H3 cells) training samples. This approach embraces the idea of leveraging multiple observations where available, akin to building a localized ``data cube'' (cite) for each H3 cell of interest. 
+\end{enumerate}
+This synergistic use of the MST-derived dendrogram (for identifying PV clusters) and H3's hierarchical functions (for representing STAC asset coverage, guiding asset accumulation, and curating training data) 
+forms a powerful strategy for targeted and efficient analysis of large-scale EO data archives.
 
-% \begin{itemize}
-%     \item CV factors: image size, number of bands, number of samples
-%     \item DL factors: number of layers, batch size, number of epochs, fp weight size
-%     \item non-DL factors: window size, other parameters 
-%     \item Big O notation
-%     \item Running time 
-%     \item Memory usage
-% \end{itemize}
+% \end{multicols}
 
-\clearpage
-
-\end{multicols}
-
-\clearpage
+% \clearpage
 
