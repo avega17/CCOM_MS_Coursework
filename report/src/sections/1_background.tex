@@ -158,14 +158,12 @@ Classical algorithms for MST construction include \textit{Borůvka's}, \textit{P
 
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
-        \item [CCOM6120] Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
-        \item [CCOM6050] Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
-        We will use open access catalogs from VHR MSI sensors, primarily from Maxar and Sentinel2, and other STAC archives to as the source for a data pipeline that will generate a 
-        large-scale global dataset of PV installations and \textbf{design algorithms for efficiently retrieving, storing, and processing this data at scale}. 
+        \item Measure performance impact of SOTA Computer Vision architectures [CCOM6120] (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
+        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys. We will use open access catalogs from VHR MSI sensors, primarily from Maxar and Sentinel2, and other STAC archives to as the source for a data pipeline that will generate a large-scale global dataset of PV installations and \textbf{design algorithms for efficiently retrieving, storing, and processing this data at scale} [CCOM6050] . 
         The resulting dataset will be used as training data for CV models that can be used to perform a global survey of PV installations that includes both large-scale commerical and utility-scale ``solar farms'' and smaller-scale distributed rooftop PV systems.
-        \item [CCOM6050] Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
-        \item [Thesis] Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
-        (\textit{distribution drift, test data quality, level of spatial-aggregation, and proprietary data})
+        \item Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors [CCOM6050]. 
+        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies 
+        (\textit{distribution drift, test data quality, level of spatial-aggregation, and proprietary data}) [Thesis].
     \end{enumerate}
 
 

@@ -36,21 +36,30 @@ Instead, the process involves a fixed series of geometric transformations and ca
 
 This efficient and compact encoding scheme allows for fast indexing and efficient storage and retrieval of hierarchical spatial information, requiring only 8 bytes per cell regardless of resolution.
 
-\lipsum[1]
+% \lipsum[1]
 \subsection{Mutual Reachibility Graph Construction from H3 Grid Cells}
 % * If using `h3.grid_distance` for all pairs: $O(N^2)$ to compute all distances, where N is number of H3 cells with PV. (Mitigation: only consider k-nearest H3 neighbors or neighbors within a fixed H3 distance to create a sparse graph).
 % * If sparse graph: $O(N \cdot \text{avg_degree})$.
-\lipsum[1-3]
+% \lipsum[1-3]
 
 \subsection{Traditional Minimum Spanning Tree (MST) Construction Algorithms}
+
+\paragraph{MST Construction Algorithms and Their Scalability}
+Several classic algorithms exist for MST construction, each with distinct performance characteristics:
+\begin{itemize}
+    \item \textbf{Kruskal's Algorithm:} Sorts all edges by weight and adds them to the MST if they connect two previously unconnected components. Typically $O(E \log E)$ or $O(E \log N)$ using a Union-Find data structure, where $E$ is the number of edges and $N$ is the number of vertices (H3 cells).
+    \item \textbf{Prim's Algorithm:} Grows the MST from an arbitrary starting vertex, iteratively adding the cheapest edge connecting a vertex in the MST to one outside. Complexity is $O(E \log N)$ with a binary heap, or $O(E + N \log N)$ with a Fibonacci heap.
+    \item \textbf{Boruvka's Algorithm:} Iteratively adds the cheapest edge for each component (or vertex initially) until a single tree is formed. Often $O(E \log N)$ and is amenable to parallelization.
+\end{itemize}
+A naive application of these algorithms to our H3 cell graph would involve considering all possible pairs of H3 cells, leading to $E = O(N^2)$ edges. This would make the MST construction prohibitively expensive, e.g., $O(N^2 \log N)$ for Kruskal's or Prim's.
 % * Prim's Algorithm: $O(N^2)$ for dense graphs, $O(E \log N)$ for sparse graphs (using priority queues).
 % * Kruskal's Algorithm: $O(E \log E)$, where E is the number of edges.
 
-\subsection{Parallel MST Construction}
+\paragraph{Parallel Optimizations}
  Work: $O(N^2)$ in constant dimensions (for WSPD-based EMST, though for \texttt{h3.grid\_distance} this might differ if not using WSPD directly but still processing edges by weight). More practically, the efficiency comes from not materializing all pairs/edges.
 Depth (Parallelism): Polylogarithmic, e.g., $O(\log^2 N)$. Refers to the longest sequence of sequential operations in the parallel algorithm. 
 
-\subsection{Cluster Hierarchy Construction}
+\subsection{Dendograms Single-Linkage Clustering vs H3 Multi-resolution Hierarchy}
 
 
 \subsection{Overall Work, Scalability, and Complexity}

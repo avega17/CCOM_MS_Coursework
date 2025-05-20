@@ -36,15 +36,14 @@ a public dataset of industrial, commercial, and utility-scale PV solar energy an
 to assess the distribution of renewable energy infrastructure at the Planetary scale}.
 
 These publications and datasets have primarily focused on large-scale, utility-scale PV solar energy installations (i.e. badly labeled ``solar farms'') which are 
-typically located in remote areas with broad land availability and low land use conflicts. However, for some countries, land comes at a premium and concentrated large-scale solar energy installations are 
-either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts. This leads to countries where distributed, small-scale rooftop or building-integrated 
+typically located in remote areas with broad land availability and low land use conflicts. However, for some places, land comes at a premium and concentrated large-scale solar energy installations are 
+either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts. This leads to countries or regions where distributed, small-scale rooftop or building-integrated 
 PV solar energy installations make up a significant portion of the total installed capacity which is not captured in assessment limited to large-scale installations. 
-For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025} and Kruitwagen et al\cite{kruitwagen_global_inventory_pv_units_2021} use a $\ge$ 10KW threshold for the solar arrays they are analyzing which 
-excludes most residential installations.  
+For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025} and Kruitwagen et al\cite{kruitwagen_global_inventory_pv_units_2021} use a $\ge10KW$ threshold for the solar arrays they are analyzing which excludes most residential installations.  
 
 Additionally, intermittent renewable energy sources bring about a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale. The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that national electric grid 
-supply and demand are balanced. PV solar energy is particularly sensitive to local weather conditions and received solar irradiance which can both be monitored using 
-remote sensing methods and local weather stations. There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
+supply and demand are balanced. PV solar energy is particularly sensitive to local weather conditions, regional cloud dynamics, and received solar irradiance which can both be monitored using 
+remote sensing methods and local weather stations (cite). There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
 the use of spectral reflectance features in Computer Vision (CV) models for PV solar array detection\cite{He_universal_pv_spectral_index_2024}, and advances in spatio-temporal data fusion methods to improve the temporal resolution of very-high-resolution (VHR) satellite imagery\cite{Tremenbert_Kasmi_pyPV_roof_2023}. 
 
 This project looks to outline the work required to address these interconnected challenges by tackling three core subproblems leveraging remote sensing data and advances in deep learning methods:
@@ -60,11 +59,10 @@ This project looks to outline the work required to address these interconnected 
     % \vfill\null
     % \columnbreak
     We will use the final project for CCOM6120 as preliminary work on this subproblem. We will explore baseline segmentation model architectures (e.g. UNet, FPN, PAN, SegFormer, etc.) and 
-    encoder combinations (e.g. ResNet, EfficientNet, ViT, Swin, etc.) and how they perform on some existing published datasets. As part of the project we will develop and establish some 
-    baseline data processing pipelines, model training workflows, and evaluation metrics. 
+    encoder combinations (e.g. ResNet, EfficientNet, ViT, Swin, etc.) and how they perform on some existing published and open datasets. As part of the project we will develop and establish some baseline data processing pipelines, model training workflows, and evaluation metrics.
 
 \subsubsection{[CCOM6050] Subproblem 2:} 
-    \textbf{Hierarchical Spatial Clustering of global PV installations to optimize dataset generation} 
+    \textbf{Hierarchical Spatial Clustering of global PV installations to optimize global dataset generation} 
     Given a large, globally distributed set of Points-of-Interest (PoIs) representing Photovoltaic (PV) solar panel installations (potentially hundreds of thousands to millions), 
     the objective is to efficiently identify and retrieve subsets of relevant satellite imagery (rasters) from open access archives (e.g., STAC catalogs) that maximize the spatial and temporal coverage of the PoIs. 
     Our \textit{Optimization Goal} is to design an algorithmic framework that \textbf{maximizes} the spatial and temporal coverage of the PoIs by the fetched rasters while simultaneously 
@@ -75,20 +73,20 @@ This project looks to outline the work required to address these interconnected 
         \item Naive querying strategies (i.e. per POI, or per cluster of POIs) quickly becomes very inefficient for large, globally distributed datasets of PoIs: 
         leads to excessive API calls or HTTP requests, redundant data retrieval, and high processing overhead.
         \item PV installations are naturally spatially clustered: \textit{but} these clusters are not known a priori and can span across arbitrary administrative boundaries or diverse geographic contexts.
-        \item The spatial and temporal coverage of the PoIs is not uniform: being able to \textit{dynamically adjust} the size and shape of the query bounding boxes based on the density of PoIs in a 
-        given area and the extent of specific raster items is crucial for efficient data retrieval.
+        \item The spatial and temporal coverage of the PoIs is not uniform: being able to \textit{dynamically adjust} the size and shape of the query bounding boxes based on the density of PoIs in a given area and the extent of specific raster items is crucial for efficient data retrieval.
     \end{itemize}
 
-    We will use the final project for CCOM6050 as preliminary work on this subproblem. We will explore the use of data fusion with geospatial context from Overture Maps, the effectiveness of aggregating our hundreds of thousands of PoIs 
-    using Discrete Global Grid Systems (DGGS) such as Uber's H3, and how we can leverage hierarchical spatial clustering algorithms over our H3 hexagon cells to produce a data structure that can be used to efficiently query and retrieve
+    We will use the final project for [CCOM6050] as preliminary work on this subproblem. We will explore the use of data fusion with geospatial context from Overture Maps, the effectiveness of aggregating our hundreds of thousands of PoIs using Discrete Global Grid Systems (DGGS) such as Uber's H3, and how we can leverage hierarchical spatial clustering algorithms over our H3 hexagon cells to produce a data structure that can be used to efficiently query and retrieve
     satellite imagery from open access catalogs.  
 
-\subsubsection{[Future Thesis Work] Subproblem 3:} 
+\subsubsection{[Thesis] Subproblem 3:} 
     \textbf{Solar irradiance forecasting at specific sites} 
     % \vspace{0.5cm}
 
     The second major challenge is analyzing \st{high-temporal-resolution surface reflectance} (intra-hour) time series of geostationary satellite imagery to produce accurate short-term forecasts of solar irradiance at specific sites. 
     This is a critical requirement for energy grid operators to ensure that supply and demand are balanced, especially in the case of intermittent renewable energy sources such as wind and solar energy. 
+
+    While beyond the scope of course proyects and this first iteration of this document, the main related works are found in \cite{Bansal_ssl_nowcasting_2022}, \cite{Li_solarcube_solar_forecasting_2024}, and \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}. 
 
     
 % \subsection{Specific Objectives}

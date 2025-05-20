@@ -101,8 +101,43 @@ Graph representation (e.g., adjacency list for sparse graph if only considering 
 % * Justification: Scalability for large numbers of H3 cells, memory efficiency.
 % * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
 
+\label{subsec:mst_construction}
+
+Once the H3 cells PV data points are identified and the graph nodes are defined (H3 cell centroids) with edge weights based on \texttt{h3.grid\_distance}, the next crucial step is the construction of a Minimum Spanning Tree (MST). The MST will form the backbone for the subsequent hierarchical clustering and dendrogram generation (in \cite{Wang_Yu_Gu_Shun_2021}). Therefore we need efficient algorithms for MST construction, especially given the potentially large number of H3 cells ($N$) involved in a global or regional analysis despite the reduction in...
+
+
+
+\paragraph{Strategies for Dense or Geometric Graphs: The EMST Case}
+For Euclidean Minimum Spanning Trees (EMST), where points exist in a geometric space, the graph is also \textit{implicitly dense}. Wang et al. (2021) address this by leveraging Well-Separated Pair Decompositions (WSPDs) \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. A WSPD reduces the number of effective "pairs" (and thus potential edges) to consider from $N^2$ to $N$. They then apply a parallelized version of Kruskal's algorithm, termed GeoFilterKruskal (GFK). Their parallel EMST algorithm achieves $O(N^2)$ work in constant dimensions but, importantly, has a polylogarithmic depth ($O(\log^2 N)$), enabling substantial parallel speedups. 
+% A key contribution of Wang et al. is the \textbf{MemoGFK optimization}. Instead of materializing the full WSPD (which can still be memory-intensive), MemoGFK dynamically traverses a k-d tree (built on point coordinates) in rounds, retrieving only WSPD pairs whose connecting edges are likely to be part of the MST within specific weight ranges. This significantly reduces both memory footprint (up to 10x) and computation time (up to 8x) in practice \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. 
+
+
+\paragraph{MST Construction with H3 \texttt{grid\_distance}}
+In our work, edge weights are primarily defined by \texttt{h3.grid\_distance}, which is \textit{a topological grid distance rather than a Euclidean one}. For their HDBSCAN* variant, the authors construct an MST based on a MRG as described above where edge weights incorporate a "core distance" metric reflecting local density. 
+\begin{enumerate}
+    \item \textbf{Graph Sparsification:} To avoid the $O(N^2)$ complexity, we first construct a sparse graph. For each H3 cell $c_i$ containing PV installations, we only consider edges to its neighbors. Neighbors can be defined as:
+    \begin{itemize}
+        \item H3 cells within a small $k$-ring (e.g., using \texttt{h3.k\_ring(cell, k\_val)} for $k' = 1 \text{ or } 2$).
+        \item H3 cells within a maximum \texttt{h3.grid\_distance} threshold.
+    \end{itemize}
+    This reduces the number of edges $E_{sparse}$ to approximately $O(N \cdot \text{avg\_degree})$, where the average degree is relatively small and constant (e.g., 6 for $k'=1$ in H3)
+    \item \textbf{Applying MST Algorithms on Sparse Graph:} Once the sparse graph with $E_{sparse}$ edges is constructed with \texttt{h3.grid\_distance}, standard MST algorithms can be applied more efficiently. For instance, Kruskal's algorithm would have a complexity related to $O(E_{sparse} \log E_{sparse})$ or $O(E_{sparse} \log N)$.
+    \item \textbf{Parallel Optimizations:}
+        \begin{itemize}
+            \item Parallel versions of Kruskal's (e.g., using parallel sort and parallel Union-Find operations) or Boruvka's algorithm are well-suited for this sparse graph.
+            \item The GFK algorithm in \cite{Wang_Yu_Gu_Shun_2021}...
+        \end{itemize}
+\end{enumerate}
+The choice of sparsification strategy (e.g., $k'$ for $k$-ring) will be a trade-off between graph density (and thus MST computation time) and ensuring the true MST based on all pairwise H3 distances is captured or closely approximated. However, as the authors showed in their runtime decomposition figure, the MST Construction step has by far the shortest running time compared to the WSPD and Dendogram computations.
+
+\paragraph{Justification and Importance}
+The effort in constructing the MST efficiently is well-justified as the relatively fast computation of MSTs, especially with parallel and memory optimizations on sparse graphs, makes this approach viable for large-scale, planetary datasets of H3 cells.
+% If adapting such a density-based approach to our H3 cells, the definition of core distance for an H3 cell (e.g., based on its PV content and the content of its H3 neighbors) and the specialized well-separation criteria proposed by Wang et al. would be relevant for constructing this specific type of MST \cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}.
+
+
 
 \subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution [Future Work]}
+
 % * Algorithm(s):
 %     * RC-Tree Tracing (RCTT) (Dhulipala et al., 2024) for CPU-based parallelism.
 %     * PANDORA (Sao et al., 2024) for GPU-accelerated computation.
