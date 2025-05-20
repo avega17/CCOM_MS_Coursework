@@ -49,13 +49,13 @@ We enrich the consolidated PV dataset with administrative boundary information f
     \item Administrative division matching (ISO country codes and region names, and division\_ids for future querying) for each PV installation
     \item Aggregation statistics at country and region levels
     \item Choropleth visualizations of PV distribution by country and region
-    \item Leafmap interactive scatterplot map for visualizing PV installations coordinates
+    \item Leafmap interactive scatterplot map for visualizing PV installations coordinates in Jupyter notebooks
     \item Adding geographic context allows us to train by country or even regional models adapted to local conditions
     \item Enables efficient querying of PV installations by administrative divisions
 \end{enumerate}
 
 \paragraph{H3 Indexing and Spatial Aggregation}
-To efficiently organize and query the global PV dataset, we utilize H3, the hierarchical hexagonal DGGS (Discrete Global Grid System) developed by Uber.
+To efficiently organize and query the global PV dataset, we utilize H3, the hierarchical hexagonal DGGS discussed above.
 H3 provides a hierarchical structure of hexagonal grid cells, allowing for efficient spatial indexing and querying. There are \texttt{duckdb} and \texttt{python} bindings available for H3,
 which we use to index the PV dataset and perform spatial operations.
 \begin{enumerate}
@@ -96,10 +96,11 @@ Graph representation (e.g., adjacency list for sparse graph if only considering 
 %     * *(Discussion of potential hybrid approaches if feature similarity is incorporated).*
 % * Graph representation (e.g., adjacency list for sparse graph if only considering neighbors within a certain H3 distance).
 
-\subsection{Minimum Spanning Tree (MST) Construction [Future Work]}
+\subsection{MST Construction: Running Time and Parallel Optimizations [Future Work]}
 % * Algorithm: Parallel GeoFilterKruskal (GFK) with MemoGFK optimization (Wang et al., 2021).
 % * Justification: Scalability for large numbers of H3 cells, memory efficiency.
 % * *(If HDBSCAN*-like density focus is explored: discuss core distance definition for H3 cells and Wang et al.'s specialized well-separation).*
+
 
 \subsection{Generating a Hierarchy of Clusters: Dendogram Construction and H3 multi-resolution [Future Work]}
 % * Algorithm(s):

@@ -4,8 +4,8 @@
 
 \subsubsection{Earth Observation and Remote Sensing}
 
-Remote sensing (RS) refers to the process of acquiring images and data of the planet’s surface using a variety of remote sensors in satellite and aerial vehicles (add citations from my prev paper). 
-These sensors analyze electromagnetic radiation reflected or emitted from objects on the Earth’s surface, which is then processed to extract information about the objects and their properties. 
+Remote sensing (RS) refers to the process of acquiring images and data of the planet's surface using a variety of remote sensors in satellite and aerial vehicles (add citations from my prev paper). 
+These sensors analyze electromagnetic radiation reflected or emitted from objects on the Earth's surface, which is then processed to extract information about the objects and their properties. 
 Besides traditional electro-optical (ie panchromatic and 3-channel RGB images (cite)) modern RS employs a variety of sensors and modalities such as multispectral 
 (four or more non-overlapping bands in the electromagnetic spectrum), hyperspectral (more than 100 narrow bands), and even active sensors such as microwave altimeters or Synthetic
 Aperture Radar (SAR) that emit their own radiation and measure the reflected signal to ”see” at night and through atmospheric obstructions like clouds and fog (cite myself or refs from prev paper). 
@@ -94,19 +94,78 @@ and clients for various programming languages.
 % * Rationale for using H3 as the foundational grid for spatial aggregation and analysis (Li et al., 2024, for grid-based significance thinking; 
 % Oje et al., 2025, for context on DGGS performance, even if HierGP is adaptive).
 
+Traditional geospatial data representation relies heavily on Coordinate Reference Systems (CRS) that project the Earth's curved surface onto a 2D plane.
+While widely used, these projections inherently introduce distortions in area, shape, distance, or direction, particularly when analyzing data at global scales or geographically diverse regions. 
+Furthermore, \texit{integrating data from various sources with different CRSs can be complex and error-prone}. Discrete Global Grid Systems (DGGS) have emerged as a modern paradigm to address these 
+limitations by providing a standardized framework for \textbf{spatially indexing and analyzing global data} \cite{ESRI_DGGS_Intro_2023}.
+
+A DGGS is a spatial reference system that partitions the Earth's surface into a hierarchical tessellation of regular, uniquely identifiable cells. 
+Key characteristics of DGGS, as outlined by the Open Geospatial Consortium (OGC) DGGS Abstract Specification \cite{OGC_DGGS_Spec}, include:
+\begin{itemize}
+    \item \textbf{Cellular Tessellation:} The globe is divided into a mesh of cells, commonly using regular polygons like hexagons, triangles, or squares. \textit{Hexagonal cells are often favored due to their inherent uniform adjacency} 
+    (all neighbors are equidistant from the cell center, for regular hexagons) and reduced orientation bias compared to square grids \cite{XDGGS_Kmoch_2024}.
+    \item \textbf{Hierarchy and Refinement:} DGGS cells are organized in a \textit{multi-resolution hierarchy}. Cells at a coarser resolution level can be perfectly subdivided into a fixed number of smaller cells at finer resolutions. 
+    This hierarchical structure is fundamental for \textit{multi-scale analysis and efficient data aggregation or disaggregation}.
+    \item \textbf{Unique Identifiers:} Each cell at every resolution level is assigned a unique identifier (cell ID). This indexing system allows for \textit{efficient data retrieval, querying, and spatial operations based on cell IDs rather than individual or sets of geographic coordinates}.
+    \item \textbf{Approximately Equal Area:} Many DGGS aim for cells that represent $\sim$equal areas on the Earth's surface at any given resolution level. This property is crucial for accurate statistical analysis and \textit{comparisons across different geographic regions}.
+\end{itemize}
+
+The primary advantage of DGGS is that it \textbf{can provide a globally consistent and performant spatial framework}, minimizing the distortions inherent in traditional map projections and simplifying the integration of diverse geospatial datasets \cite{ESRI_DGGS_Intro_2023, XDGGS_Kmoch_2024}. 
+This makes DGGS particularly well-suited for \textit{large-scale environmental modeling, Earth observation data analysis, and global data fusion tasks}.
+
+\textbf{Uber's H3} (2018) is a prominent open-source DGGS that utilizes a hexagonal, hierarchical grid system. 
+It divides the Earth into base cells projected onto the faces of an icosahedron, which are then recursively subdivided into finer hexagonal cells across 16 resolution levels\cite{H3_Overview}. 
+H3 provides efficient functions for:
+\begin{itemize}
+    \item Indexing geographic coordinates to cell IDs (e.g., \texttt{h3.latlng\_to\_cell()}). As discussed previously, this operation is approximately O(1) for a single point due to its direct geometric transformations and fixed series of bounded computations.
+    \item Aggregating adjacent data points within H3 cells (e.g., \texttt{h3.cell\_to\_geo\_boundary()} to retrieve the vertices of a cell that contains a set of points).
+    \item Hierarchical multi-resolution traversal (e.g., finding parent or child cells).
+    \item Neighborhood analysis (e.g., \texttt{h3.k\_ring()} to find cells within a certain grid distance).
+    \item Calculating grid distance between cells (e.g., \texttt{h3.grid\_distance()}), which measures the minimum number of cell traversals.
+\end{itemize}
+
+For this project, H3 is adopted as the foundational DGGS for several reasons. Firstly, its hierarchical indexing allows for flexible aggregation of Photovoltaic (PV) Point-of-Interest (PoI) data into discrete spatial units (H3 cells) at an appropriate resolution. 
+This aligns with the grid-based significance mapping concept explored by Li et al. (2024) for optimizing Earth observation tasks, although here we adapt it for analyzing historical/archive data. 
+Secondly, the consistent grid structure and defined neighborhood relationships are naturally conducive to graph-based spatial clustering, where \textbf{H3 cells become nodes in a Minimum Spanning Tree (MST)}. 
+The \texttt{h3.grid\_distance} function provides a natural and computationally efficient metric for defining proximity between these H3 cell nodes. 
+While spatio-temporal and dynamically-adaptive grid systems like HierGP (cite Oje et al., 2025) and others offer dynamic partitioning based on data characteristics and demonstrate strong performance in certain benchmarks, H3's 
+global consistency, well-defined hierarchy, and mature software tooling make it a robust choice for developing a standardized analytical framework for our research. 
+The unique cell IDs provided by H3 also facilitate efficient data management and linkage between PV locations, derived clusters, and corresponding STAC assets as we'll describe in our Algorithms section.
+
 \subsection{Minimum Spanning Trees for Spatial and Hierarchical Clustering}
 % * Concept of MSTs in graph theory.
 % * Application of MSTs in clustering: identifying natural groupings by cutting edges.
 % * Advantages for spatial data: ability to find clusters of arbitrary shapes (Gagolewski et al., 2023).
 
+Hierarchical clustering methods group data points into a tree-like structure of clusters, which is particularly useful for understanding multi-scale patterns in data. When applied to geospatial data, this is known as hierarchical spatial clustering, which creates a hierarchy of clusters based on spatial relationships. Minimum Spanning Trees (MSTs) offer a powerful and versatile approach to achieve this.
+
+\subsection{Fundamentals of MST-based Clustering}
+A Minimum Spanning Tree (MST) of \textit{a connected, undirected graph is an acyclic subgraph that connects all vertices} (data points) with the minimum possible total edge weight. 
+In the context of clustering, edge weights typically represent distances or dissimilarities between data points. As noted by Zaslavskiy et al. in "Clustering with Minimum Spanning Trees: How good can it be?"\cite{}, 
+% MSTs provide a natural representation of datasets for clustering, for example, by deleting the longest edges in the MST (i.e. the most distant or dissimilar points) you can partition the graph into k connected components, which can be interpreted as k distinct clusters.
+% This approach is particularly effective for identifying clusters of varying densities and shapes, as it \textit{does not rely on strong assumptions about the data distribution, convexity or apriori knowledge like the number of clusters}.
+
+Key properties and advantages of using MSTs for clustering include:
+\begin{itemize}
+    \item \textbf{Natural Cluster Representation:} An MST for $n$ points always has $n-1$ edges. Removing $k-1$ of the longest or most inconsistent edges from an MST partitions the graph into $k$ connected components, which can be interpreted as $k$ distinct clusters.
+    \item \textbf{Detection of Arbitrary Cluster Shapes:} Unlike methods like K-means that assume convex clusters, MST-based approaches can effectively identify clusters of varying densities and arbitrary shapes.
+    \item \textbf{No Strong a priori Assumptions:} MST clustering does not require prior knowledge of the number of clusters or strong assumptions about the data distribution.
+    \item \textbf{Algorithmic Foundation:} MSTs serve as a foundation for various clustering algorithms, including single-linkage, divisive, and agglomerative hierarchical clustering methods.
+\end{itemize}
+
+Classical algorithms for MST construction include \textit{Borůvka's}, \textit{Prim's (Jarník's)}, and \textit{Kruskal's} algorithms, with complexities generally ranging from $O(m \log n)$ to $O(n^2)$ for dense graphs 
+(where $n$ is the number of vertices and $m$ is the number of edges). The authors highlight that MST-based methods can outperform popular parametric approaches in benchmarks and can generate a whole hierarchy of clusters efficiently once the MST is computed.
+
 \subsection{Research Gaps and Contribution Goals}
     \begin{enumerate}
-        \item Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
-        \item Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
-        We will use \textit{global 30cm yearly basemaps} or open access catalogs from VHR MSI sensors, primarily from Maxar, to perform a global survey of PV installations that includes both large-scale farms and distributed rooftop PV systems.
-        \item Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
-        \item Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
-        (distribution drift, test data quality, level of spatial-aggregation, and proprietary data)
+        \item [CCOM6120] Measure performance impact of SOTA Computer Vision architectures (e.g. ViT, Swin, CNN-Transformer hybrids) currently lacking in most recent publications and compare to established segmentation baselines (e.g. UNet, FPN, PAN, etc.)
+        \item [CCOM6050] Regional, and global surveys are limited to large-scale farms using medium resolution sensors ($\sim10m$/pixel). On the other hand, studies using VHR aerial imagery usually only have coverage for local, city-scale surveys.
+        We will use open access catalogs from VHR MSI sensors, primarily from Maxar and Sentinel2, and other STAC archives to as the source for a data pipeline that will generate a 
+        large-scale global dataset of PV installations and \textbf{design algorithms for efficiently retrieving, storing, and processing this data at scale}. 
+        The resulting dataset will be used as training data for CV models that can be used to perform a global survey of PV installations that includes both large-scale commerical and utility-scale ``solar farms'' and smaller-scale distributed rooftop PV systems.
+        \item [CCOM6050] Almost all notable studies (with the exception of (cite GloSoFarID)) exclusively use RGB image bands. Measure impact of use of PV-specific spectral indices\cite{He_universal_pv_spectral_index_2024} and specifically the benefits of including NIR + SWIR bands available in Maxar sensors
+        \item [Thesis] Develop a solution that consciously tackles the challenges identified in \cite{Hu_solar_array_pitfalls_2022} for evaluating and performing comparisons of different remote sensing solar array assessment methodologies
+        (\textit{distribution drift, test data quality, level of spatial-aggregation, and proprietary data})
     \end{enumerate}
 
 
