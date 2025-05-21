@@ -2,14 +2,11 @@
 
 
 
-\subsection{General Objective}
-    \vspace{0.5cm}
-    
-    \textbf{Regional-scale surveys} of distributed \textit{rooftop PV solar panels}, and \textbf{site-level, short-term forecasting} of \textit{solar irradiance} used to estimate local PV power generation. \\
-    \\
-    This assessment will primarily produce counts of installed systems, estimates of surface area, estimated PV generation potential while monitoring will provide forecasts of local solar irradiance which are used to model estimates of PV energy generation at specific sites. \\
-    \\ 
-    The work developed for this thesis proposal is particularly inspired by and seeks to build upon the work realized, methodologies outlined, research gaps identified, and future work outlined in \cite{robinson_ms_planet_global_renewables_watch_2025}, \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}, \cite{Li_solarcube_solar_forecasting_2024}, \cite{maxar_germany_pv_dataset}, \cite{Hu_solar_array_pitfalls_2022}, \cite{de-Hoog_sota_survey_2020}, \cite{Bansal_ssl_nowcasting_2022}, \cite{Jiang_rooftop_pv_assessment_2022}, \cite{Tremenbert_Kasmi_pyPV_roof_2023}, and \cite{Yu_deep_solar_2018}.
+\subsection{[Thesis] General Objective}
+    % \vspace{0.5cm}
+    \textbf{Regional-scale surveys} of distributed large and small scale \textit{PV solar panel installations}, and \textbf{site-level, short-term forecasting} of \textit{solar irradiance} used to estimate local PV power generation.
+    This assessment will primarily produce counts of installed systems, estimates of surface area, estimated PV generation potential while monitoring will provide forecasts of local solar irradiance which are used to model estimates of PV energy generation at specific sites.
+    % The work developed for this thesis proposal is particularly inspired by and seeks to build upon the work realized, methodologies outlined, research gaps identified, and future work outlined in \cite{robinson_ms_planet_global_renewables_watch_2025}, \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}, \cite{Li_solarcube_solar_forecasting_2024}, \cite{maxar_germany_pv_dataset}, \cite{Hu_solar_array_pitfalls_2022}, \cite{de-Hoog_sota_survey_2020}, \cite{Bansal_ssl_nowcasting_2022}, \cite{Jiang_rooftop_pv_assessment_2022}, \cite{Tremenbert_Kasmi_pyPV_roof_2023}, and \cite{Yu_deep_solar_2018}.
 
 \subsection{Problem Statement and Motivation} 
 % Brief description of the problem, objectives, methodology, and main findings. Less than 500 words.
@@ -84,25 +81,8 @@ This project looks to outline the work required to address these interconnected 
     \textbf{Solar irradiance forecasting at specific sites} 
     % \vspace{0.5cm}
 
-    The second major challenge is analyzing \st{high-temporal-resolution surface reflectance} (intra-hour) time series of geostationary satellite imagery to produce accurate short-term forecasts of solar irradiance at specific sites. 
+    The second major challenge is analyzing \textit{high-temporal-resolution surface reflectance} (intra-hour) time series of geostationary satellite imagery to produce accurate short-term forecasts of solar irradiance at specific sites. 
     This is a critical requirement for energy grid operators to ensure that supply and demand are balanced, especially in the case of intermittent renewable energy sources such as wind and solar energy. 
 
     While beyond the scope of course proyects and this first iteration of this document, the main related works are found in \cite{Bansal_ssl_nowcasting_2022}, \cite{Li_solarcube_solar_forecasting_2024}, and \cite{Boussif_neurips_day_ahead_solar_forecasting_2023}. 
-
-    
-% \subsection{Specific Objectives}
-%     \begin{enumerate}
-%         \item Survey of rooftop Solar Panel \textit{Arrays} via Small Object Detection and Instance Segmentation using \href{https://www.maxar.com/maxar-intelligence/constellation}{very-high-spatial-resolution} (VHR) Multispectral \textit{satellite} imagery (MSI) ($\leq1$ meter/pixel) of installation locations sourced from a \textbf{global inventory of labeled PV arrays} collated from multiple scientific dataset publications [add citations] 
-%         \item Leverage algorithms that can aid in optimizing our fetching of global satellite imagery from Open Access catalogs, and the use of \textbf{multi-spectral} data to improve the detection of PV arrays.
-%         \item \textit{Near-term site-level forecasting} of solar \textbf{Global Horizontal  Irradiance} used to estimate PV power generation via data fusion with Spatio-temporal context from:
-%         \begin{itemize}
-%             \item Time-series frames from geostationary satellite sensors with high temporal resolution coarse spatial resolution
-%             \item Historical Solar irradiance (e.g. NREL's National Solar Radiation Database)
-%             \item Any available PV power generation ground-truth time series
-%         \end{itemize}
-        
-%     \end{enumerate}
-    
-
     \hfill
-% \lipsum[1]

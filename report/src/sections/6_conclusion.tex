@@ -1,11 +1,37 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{Conclusions/Discussion/Future Work}
+\section{Discussion and Future Work}
 \bigskip
 \end{center}
 {\color{gray}\hrule}
 \vspace{0.5cm}
 
-\azul{Summary of the most relevant findings and complications, potential applications and limitations, and next steps in the research.}
+% \subsection{Discussion}
+\paragraph{Proposed work}: The problem of efficiently identifying and retrieving relevant satellite imagery from vast STAC archives for a large, globally distributed set of PV installations presents a significant data engineering and algorithmic challenge. 
+This project has outlined a novel approach that leverages the H3 DGGS for spatial aggregation, MST-based hierarchical clustering to identify spatially coherent groups of PV installations, and a refined 
+STAC querying strategy that utilizes these clusters and H3's hierarchical properties to optimize data retrieval and curation for Computer Vision (CV) model training. 
 
-% \lipsum[1-2]
+The core hypothesis is that by transforming sparsely distributed, but densely clustered PV POI's into a graph of H3 cells weighted by their distance in the H3 grid, we can effectively model their spatial relationships. 
+The subsequent construction of an MST and dendrogram allows for the identification of meaningful, multi-scale PV clusters. 
+Instead of querying for individual PoIs or arbitrary regions, queries can be optimized around these identified PV clusters, significantly reducing the number of API calls and the volume of data initially considered.
+
+Furthermore, the proposed method for curating training data by "stacking" multiple STAC observations for each H3 cell of interest addresses a critical need in remote sensing CV: the generation of high-quality, diverse, and spatially relevant training datasets. 
+The use of H3 DGGS to create multi-resolution representations of STAC asset coverage offers a sophisticated way to manage and relate raster footprints to PV clusters. 
+This integrated approach, drawing on efficient parallel algorithms for MST and dendrogram construction from recent literature, aims to create \textbf{a scalable and robust data engineering pipeline}.
+While existing individual components (H3, MST, STAC) are established, their combined application for optimizing STAC asset retrieval through hierarchical spatial clustering of PV PoIs, and the subsequent detailed data curation strategy, presents a novel workflow. 
+This methodology directly addresses the challenge of balancing comprehensive data coverage with computational and data retrieval efficiency, crucial for building planetary-scale PV datasets and enabling robust CV model development when dealing with large-scale remote sensing data.
+
+% \subsection{Future Work}
+\paragraph{Data Engineering Pipeline for STAC}: 
+
+The immediate next steps focus on implementing and validating the proposed data engineering pipelines. This involves translating the algorithmic framework outlined into operational code and testing its components. 
+% Once local testing is complete, this can be scaled to the cloud with reduced development effort using tools like Motherduck, dbt, and Coiled (cite). 
+Below we briefly outline the next steps for local development: 
+
+\begin{enumerate}
+    \item Finalize Data Ingestion and H3 Aggregation Pipeline
+    \item Build STAC Fetching Pipeline for arbitrary geometries
+    \item Develop and Test Graph Construction and MST Pipeline
+    \item Implement Dendrogram Construction and Cluster Partitioning
+    \item Initial Testing and Validation
+\end{enumerate}

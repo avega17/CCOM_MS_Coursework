@@ -112,6 +112,9 @@ Key characteristics of DGGS, as outlined by the Open Geospatial Consortium (OGC)
 
 The primary advantage of DGGS is that it \textbf{can provide a globally consistent and performant spatial framework}, minimizing the distortions inherent in traditional map projections and simplifying the integration of diverse geospatial datasets \cite{ESRI_DGGS_Intro_2023, XDGGS_Kmoch_2024}. 
 This makes DGGS particularly well-suited for \textit{large-scale environmental modeling, Earth observation data analysis, and global data fusion tasks}.
+While various DGGS implementations exist, each with different cell shapes (e.g., triangles, squares, hexagons) and projection bases, hexagonal grids have gained popularity for several reasons. 
+Hexagons are the most compact regular polygon to tile a plane, offering higher packing density. 
+They also exhibit uniform adjacency, meaning all six neighbors of a central hexagon are equidistant (for regular hexagons) and share edges of the same length, which simplifies neighborhood calculations and reduces orientation bias compared to square grids \cite{XDGGS_Kmoch_2024}.
 
 \textbf{Uber's H3} (2018) is a prominent open-source DGGS that utilizes a hexagonal, hierarchical grid system. 
 It divides the Earth into base cells projected onto the faces of an icosahedron, which are then recursively subdivided into finer hexagonal cells across 16 resolution levels\cite{H3_Overview}. 
@@ -131,6 +134,17 @@ The \texttt{h3.grid\_distance} function provides a natural and computationally e
 While spatio-temporal and dynamically-adaptive grid systems like HierGP (cite Oje et al., 2025) \cite{Oje_HierGP_ST_2025} and others offer dynamic partitioning based on data characteristics and demonstrate strong performance in certain benchmarks, H3's 
 second-place performance in that same publication, global consistency, well-defined hierarchy, and, particularly, mature software tooling make it a robust choice for developing a standardized analytical framework for our research. 
 The unique cell IDs provided by H3 also facilitate efficient data management and linkage between PV locations, derived clusters, and corresponding STAC assets as we'll describe in our Algorithms section.
+
+\end{multicols}
+
+\begin{figure}[h!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{./report/assets/figures/Uber-H3-globe.png} % should load relative to the main.tex file
+    \caption{Illustration of Uber's H3 hexagonal hierarchical spatial index. The image shows the icosahedron base projection and progressive refinement into smaller hexagonal cells across different resolution levels. Source: Uber Engineering Blog.}
+    \label{fig:h3_illustration}
+\end{figure}
+
+\begin{multicols}{2}
 
 \subsection{Hierarchical-Spatial Clustering}
 % * Concept of MSTs in graph theory.

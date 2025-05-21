@@ -1,6 +1,6 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{[CCOM6050] Spatial Hierarchical Clustering applied to DGGS: Algorithms and Complexity}
+\section{Spatial Hierarchical Clustering applied to DGGS: Algorithms and Complexity}
 \textbf{Here we will go into detail on our algorithm design and approach for optimization of STAC queries when generating our dataset.}
 \bigskip
 \end{center}
@@ -13,9 +13,12 @@
 
 \paragraph{Dataset Acquisition and Management} 
 We download PV installation datasets from various academic repositories including Zenodo, figshare, GitHub, and ScienceBase. 
-The datasets are available in multiple vector file formats (GeoJSON, GeoPackage, Shapefile), which we standardize using our data pipeline. 
+The datasets listed in the table below are publicly available and can be used for training and testing of computer vision models for PV array segmentation and detection. 
+They were selected based on their availability, size, area coverage, and relevance to the problem of PV array segmentation and detection.
+The data records are available in multiple vector file formats (GeoJSON, GeoPackage, Shapefile), which we standardize using our data pipeline. a
 We utilize the \texttt{datahugger} library to fetch datasets from Zenodo and figshare, \texttt{sciencebasepy} for accessing the USGS ScienceBase Catalog, 
 and custom functions for GitHub-hosted datasets. Dataset metadata is stored in a structured JSON configuration file to track sources, DOIs, and formats. 
+For implementation details of this subsection, we refer the reader to the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_research/blob/main/fetch-pv-datasets-ESDA.ipynb}{fetch-pv-datasets-ESDA.ipynb} notebook.
 
 \paragraph{Standardization to GeoParquet}
 We convert all vector dataset files to GeoParquet format using \texttt{geopandas}. GeoParquet extends the Apache Parquet columnar storage format with geospatial capabilities, providing significant advantages:
@@ -114,7 +117,7 @@ Several classic algorithms are foundational for MST construction on a graph with
 \end{itemize}
 Given our graph sparsification, where $E_{sparse}$ is typically $O(N)$ (e.g., when using $k$-ring neighbors with small $k'$), these algorithms become significantly more tractable. For example, Kruskal's algorithm would have a complexity of roughly $O(N \log N)$.
 
-\paragraph{Parallel Optimizations for EMST and Adaptations for H3 Graphs}
+\paragraph{Parallel Optimizations for EMST and Adaptations for H3 Graphs [Future Work]}
 For Euclidean Minimum Spanning Trees (EMST) on point data, where the graph is implicitly dense, Wang et al. (2021) proposed parallel algorithms using Well-Separated Pair Decompositions (WSPDs) to reduce effective pairs to $O(N)$, and a parallel GeoFilterKruskal (GFK)\cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. 
 Their parallel EMST algorithm achieves $O(N^2)$ work in constant dimensions but, importantly, has a polylogarithmic depth, $O(\log^2 N)$, (i.e., the longest series of sequential operations in the parallel algorithm) enabling substantial parallel speedups. 
 
@@ -162,9 +165,24 @@ This integration is key to optimizing the selection of STAC assets to maximize P
         The H3 cells derived from STAC raster polyfills of H3 cells are then spatially intersected with the geometry of an Area-of-Interest (AOI) (from Overture Maps \textit{division\_area} theme) which we convert to H3 Cells using the same function. 
         This step identifies, for each AOI, the subset of H3 cells from each overlapping raster that falls within its boundaries. We specifically only track raster-derived H3 cells that also correspond to H3 cells containing our PV PoIs. 
         In this way we can capture only the "cells of Interest" (COIs) for each STAC raster item and AOI.
-        \\
-        % [insert polygon\_to\_cells example figure from tutorial]
-        \\
+        
+        \begin{figure}[ht]
+            \centering
+            \begin{subfigure}{\textwidth}
+                \centering
+                \includegraphics[width=0.6\textwidth]{report/assets/figures/h3_polygonToCells_example_res9.png}
+                \caption{Polyfill of H3 cells at resolution 9 of an example Polygon}
+            \end{subfigure}
+            
+            \begin{subfigure}{\textwidth}
+                \centering
+                \includegraphics[width=0.6\textwidth]{report/assets/figures/h3_polygonToCells_example_res10.png}
+                \caption{Polyfill of H3 cells at resolution 10 of the same example Polygon with higher precision}
+            \end{subfigure}
+            % \caption{Representation of a STAC item footprint at different H3 resolutions using \texttt{polygon\_to\_cells()}. Higher resolutions provide more precise coverage representation at the cost of more cells.}
+            \label{fig:h3_polygon_to_cells}
+        \end{figure}
+
         Since we are simply accumulating counts and logging raster item ID's to each H3 cell, these operations lend themselves to simple SQL aggregation queries in \texttt{duckdb} using the available H3 duckdb bindings. 
         This lets us trivially vectorize and parallelize the aggregation process over vast STAC collections once the STAC catalogs \texttt{json} files are retrieved. 
         This can be further optimized by converting STAC \texttt{json} collections to geoparquet using \texttt{stac-geoparquet} which allows for efficient processing and analytics over STAC items in bulk. 
@@ -217,5 +235,5 @@ forms a powerful strategy for targeted and efficient analysis of large-scale EO 
 
 % \end{multicols}
 
-% \clearpage
+\clearpage
 

@@ -14,50 +14,45 @@
 \end{center}
 {\color{gray}\hrule}
 
-\begin{multicols}{2}
-
-% define columnwidth
-% \newlength{\columnwidth}
-% \setlength{\columnwidth}{0.5\textwidth}
-% \setlength{\columnsep}{0.5cm}
-
 \subsection{Datasets}
 \subsubsection{RS imagery and locations of PV arrays}
-    \begin{table}[htbp]
+    Datasets in bold were used in the data preparation and analysis described in the next section. 
+    \begin{table*}[htbp]
         \centering
         \scriptsize
-        \caption{Available PV Array Segmentation and Detection Datasets}
-        \begin{tabularx}{\columnwidth}{|l|l|X|l|}
-            \hline
+        \caption{Summary of identified datasets for PV array segmentation and detection.}
+        \begin{tabularx}{.95\textwidth}{|p{0.5\textwidth}|p{0.1\textwidth}|p{0.1\textwidth}|p{0.15\textwidth}|}  \hline
             \textbf{Dataset Title} & \textbf{Author, Year} & \textbf{DOI Links} & \textbf{Label Information} \\
-            \hline
-            Distributed solar photovoltaic array location and extent dataset & Bradbury, 2016 & \href{https://doi.org/10.1038/sdata.2016.106}{Paper}, \href{https://doi.org/10.6084/m9.figshare.3385780.v4}{Dataset} & 19,433 PV modules in 4 California cities \\
-            \hline
-            A harmonised, high-coverage, open dataset of solar PV installations in the UK & Stowell et al., 2020 & \href{https://doi.org/10.1038/s41597-020-00739-0}{Paper}, \href{https://zenodo.org/records/4059881}{Dataset} & 265,418 data points \\
-            \hline
-            An Artificial Intelligence Dataset for Solar Energy Locations in India & Ortiz, 2022 & \href{https://doi.org/10.1038/s41597-022-01499-9}{Paper}, \href{https://github.com/microsoft/solar-farms-mapping/blob/main/data/solar_farms_india_2021_merged_simplified.geojson}{Dataset} & 117 geo-referenced solar installations \\
-            \hline
-            A global inventory of photovoltaic solar energy generating units & Kruitwagen et al., 2021 & \href{https://doi.org/10.1038/s41586-021-03957-7}{Paper}, \href{https://doi.org/10.5281/zenodo.5005867}{Dataset} & 50,426 training samples; 68,661 predicted labels \\
-            \hline
-            Harmonised global datasets of wind and solar farm locations and power & Dunnett et al., 2020 & \href{https://doi.org/10.1038/s41597-020-0469-8}{Paper}, \href{https://doi.org/10.6084/m9.figshare.11310269.v6}{Dataset} & 35,272 PV installations \\
-            \hline
-            Multi-resolution dataset for PV panel segmentation & Jiang, 2021 & \href{https://doi.org/10.5194/essd-13-5389-2021}{Paper}, \href{https://doi.org/10.5281/zenodo.5171712}{Dataset} & 3,716 PV data points \\
-            \hline
-            A solar panel dataset of very high resolution satellite imagery & Clark et al., 2023 & \href{https://doi.org/10.1038/s41597-023-02539-8}{Paper}, \href{https://doi.org/10.6084/m9.figshare.22081091.v3}{Dataset} & 2,542 object labels \\
-            \hline
-            Crowdsourced aerial images with annotated solar PV arrays & Kasmi, 2023 & \href{https://doi.org/10.1038/s41597-023-01951-4}{Paper}, \href{https://doi.org/10.5281/zenodo.6865878}{Dataset} & >28K PV points; 13K+ segmentation masks \\
-            \hline
-            Georectified polygon database of ground-mounted large-scale solar PV sites in US & Sydny, 2023 & \href{https://doi.org/10.1038/s41597-023-02644-8}{Paper}, \href{https://www.sciencebase.gov/catalog/item/6671c479d34e84915adb7536}{Dataset} & 4,186 data points \\
-            \hline
-            Vectorized solar PV installation dataset across China & Liu et al., 2024 & \href{https://doi.org/10.1038/s41597-024-04356-z}{Paper}, \href{https://github.com/qingfengxitu/ChinaPV}{Dataset} & 3,356 PV labels \\
-            \hline
-            GloSoFarID: Global multispectral dataset for Solar Farm ID & Yang, 2024 & \href{https://doi.org/10.48550/arXiv.2404.05180}{Paper}, \href{https://github.com/yzyly1992/GloSoFarID/tree/main/data_coordinates}{Dataset} & 6,793 PV samples across 3 years \\
-            \hline
-            A global geolocated dataset of commercial-scale solar photovoltaic power plants & Feng et al., 2024 & \href{https://doi.org/10.1038/s41597-024-02994-x}{Paper}, \href{https://doi.org/10.57760/sciencedb.o00121.00001}{Dataset} & 5K Positive samples and 5K negative samples in China, spring 2020 \\
-            \hline
+                \hline
+                A 10-m national-scale map of ground-mounted photovoltaic power stations in China of 2020 & Feng et al., 2024 & \href{https://doi.org/10.1038/s41597-024-02994-x}{Paper}\linebreak \href{https://doi.org/10.57760/sciencedb.o00121.00001}{Dataset} & 5K Positive samples and 5K negative samples in China, spring 2020 \\
+                \hline
+                GloSoFarID: Global multispectral dataset for Solar Farm ID & Yang, 2024 & \href{https://doi.org/10.48550/arXiv.2404.05180}{Paper}\linebreak \href{https://github.com/yzyly1992/GloSoFarID/tree/main/data_coordinates}{Dataset} & 6,793 PV samples across 3 years \\
+                \hline
+                Vectorized solar PV installation dataset across China & Liu et al., 2024 & \href{https://doi.org/10.1038/s41597-024-04356-z}{Paper}\linebreak \href{https://github.com/qingfengxitu/ChinaPV}{Dataset} & 3,356 PV labels \\
+                \hline
+                \textbf{A solar panel dataset of very high resolution satellite imagery} & Clark et al., 2023 & \href{https://doi.org/10.1038/s41597-023-02539-8}{Paper}\linebreak \href{https://doi.org/10.6084/m9.figshare.22081091.v3}{Dataset} & 2,542 object labels \\
+                \hline
+                Crowdsourced aerial images with annotated solar PV arrays & Kasmi, 2023 & \href{https://doi.org/10.1038/s41597-023-01951-4}{Paper}\linebreak \href{https://doi.org/10.5281/zenodo.6865878}{Dataset} & $>$28K PV points\linebreak 13K$+$ segmentation masks \\
+                \hline
+                Georectified polygon database of ground-mounted large-scale solar PV sites in US & Sydny, 2023 & \href{https://doi.org/10.1038/s41597-023-02644-8}{Paper}\linebreak \href{https://www.sciencebase.gov/catalog/item/6671c479d34e84915adb7536}{Dataset} & 4,186 data points \\
+                \hline
+                \textbf{An Artificial Intelligence Dataset for Solar Energy Locations in India} & Ortiz, 2022 & \href{https://doi.org/10.1038/s41597-022-01499-9}{Paper}\linebreak \href{https://github.com/microsoft/solar-farms-mapping/blob/main/data/solar_farms_india_2021_merged_simplified.geojson}{Dataset} & 117 geo-referenced solar installations \\
+                \hline
+                \textbf{A global inventory of photovoltaic solar energy generating units} & Kruitwagen et al., 2021 & \href{https://doi.org/10.1038/s41586-021-03957-7}{Paper}\linebreak \href{https://doi.org/10.5281/zenodo.5005867}{Dataset} & 50,426 training samples\linebreak 68,661 predicted labels \\
+                \hline
+                Multi-resolution dataset for PV panel segmentation & Jiang, 2021 & \href{https://doi.org/10.5194/essd-13-5389-2021}{Paper}\linebreak \href{https://doi.org/10.5281/zenodo.5171712}{Dataset} & 3,716 PV data points \\
+                \hline
+                \textbf{A harmonised, high-coverage, open dataset of solar PV installations in the UK} & Stowell et al., 2020 & \href{https://doi.org/10.1038/s41597-020-00739-0}{Paper}\linebreak \href{https://zenodo.org/records/4059881}{Dataset} & 265,418 data points \\
+                \hline
+                \textbf{Harmonised global datasets of wind and solar farm locations and power} & Dunnett et al., 2020 & \href{https://doi.org/10.1038/s41597-020-0469-8}{Paper}\linebreak \href{https://doi.org/10.6084/m9.figshare.11310269.v6}{Dataset} & 35,272 PV installations \\
+                \hline
+                \textbf{Distributed solar photovoltaic array location and extent dataset} & Bradbury, 2016 & \href{https://doi.org/10.1038/sdata.2016.106}{Paper}\linebreak \href{https://doi.org/10.6084/m9.figshare.3385780.v4}{Dataset} & 19,433 PV modules in 4 California cities \\
+                \hline
         \end{tabularx}
         \label{tab:pv_datasets}
-    \end{table}
+    \end{table*}
+
+\begin{multicols}{2}
 
 \subsection{Python Libraries and other computational tools}
 \begin{itemize}
@@ -121,9 +116,6 @@ As of writing, the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_re
     %         \item Dice Loss
     %         \item mean Intersection over Union (mIoU): 
     %     \end{itemize}
-
-    
-    
 
 % \subsection{Expected Results}
 
