@@ -1,6 +1,6 @@
 {\color{gray}\hrule}
 \begin{center}
-\section{Spatial Hierarchical Clustering applied to DGGS: Algorithms and Complexity}
+\section{Spatial-Hierarchical Clustering applied to DGGS: Algorithms \& Complexity}
 \textbf{Here we will go into detail on our algorithm design and approach for optimization of STAC queries when generating our dataset.}
 \bigskip
 \end{center}
@@ -20,6 +20,8 @@ We utilize the \texttt{datahugger} library to fetch datasets from Zenodo and fig
 and custom functions for GitHub-hosted datasets. Dataset metadata is stored in a structured JSON configuration file to track sources, DOIs, and formats. 
 For implementation details of this subsection, we refer the reader to the \href{https://github.com/avega17/CCOM_MS_Spring_2025_EO_PV_research/blob/main/fetch-pv-datasets-ESDA.ipynb}{fetch-pv-datasets-ESDA.ipynb} notebook.
 
+\begin{multicols}{2}
+
 \paragraph{Standardization to GeoParquet}
 We convert all vector dataset files to GeoParquet format using \texttt{geopandas}. GeoParquet extends the Apache Parquet columnar storage format with geospatial capabilities, providing significant advantages:
 \begin{itemize}
@@ -29,7 +31,7 @@ We convert all vector dataset files to GeoParquet format using \texttt{geopandas
     \item \textit{Wide ecosystem compatibility} with modern geospatial and cloud-optimized tools and workflows
 \end{itemize}
 
-This provides a space complexity reduction. For example, the cumulative size of the 5 datasets(cite) we worked with this semester was 690.5 MB in GeoJSON and GeoPackage formats, 
+This provides a space complexity reduction. For example, the cumulative size of the 5 datasets (see Table 1) we worked with this semester was 690.5 MB in GeoJSON and GeoPackage formats, 
 while after consolidation and conversion to GeoParquet the size was reduced to 107.3MB. This is largely due to the inherent compression capabilities of the Parquet format, from removing unused columns, 
 and filtering out invalid geometries. 
 
@@ -90,13 +92,15 @@ This function returns the shortest number of steps (hops) on the H3 grid require
 A naive approach to constructing a complete graph with edges between all $N$ H3 cells would require computing $O(N^2)$ edge weights, making MST computation intractable for large $N$. Therefore, graph sparsification is essential:
 \begin{enumerate}
     \item \textbf{$k$-Ring Neighbors:} For each H3 cell $c_i$, consider only edges to its immediate H3 neighbors within a small $k$-ring (e.g., using \texttt{h3.k\_ring(}$c_i$\texttt{, k\_val)} where $1 \geq k' \leq 3$). 
-    This bounds the number of candidate edges to $O(N \cdot 7^{k'})$ where N is the number of H3 cells with PV installations and further bounded by only considering grid cells with PV installations.
+    This bounds the number of candidate edges to $O(N \cdot \text{max cells in k'-ring})$ where N is the number of H3 cells with PV installations and further bounded by only considering grid cells with PV installations.
     \item \textbf{Maximum H3 Distance Threshold:} Alternatively, consider edges only between H3 cells $c_a, c_b$ if $\texttt{h3.grid\_distance}(c_a, c_b) \leq D_{\max}$, where $D_{\max}$ is a predefined maximum H3 distance. 
     The number of edges here would depend on the spatial distribution of PV-containing H3 cells and $D_{\max}$.
 \end{enumerate}
 These sparsification strategies significantly reduce the number of edges ($E_{sparse}$) in the graph, typically to $O(N \cdot \text{avg\_degree})$, making subsequent MST algorithms (like Kruskal's or Prim's, which scale with the number of edges) computationally feasible. 
 The choice of sparsification parameters ($k'$ or $D_{\max}$) involves a trade-off between computational cost and the fidelity of the resulting MST compared to one built on a complete graph.
 The resulting sparse, weighted graph of H3 cells is the direct input to the MST construction algorithms. 
+
+\end{multicols}
 
 \subsection{MST Construction: Running Time and Parallel Optimizations [Future Work]}
 % * Algorithm: Parallel GeoFilterKruskal (GFK) with MemoGFK optimization (Wang et al., 2021).
@@ -121,7 +125,7 @@ Given our graph sparsification, where $E_{sparse}$ is typically $O(N)$ (e.g., wh
 For Euclidean Minimum Spanning Trees (EMST) on point data, where the graph is implicitly dense, Wang et al. (2021) proposed parallel algorithms using Well-Separated Pair Decompositions (WSPDs) to reduce effective pairs to $O(N)$, and a parallel GeoFilterKruskal (GFK)\cite{Wang_Fast_Parallel_EMST_HDBSCAN_2021}. 
 Their parallel EMST algorithm achieves $O(N^2)$ work in constant dimensions but, importantly, has a polylogarithmic depth, $O(\log^2 N)$, (i.e., the longest series of sequential operations in the parallel algorithm) enabling substantial parallel speedups. 
 
-For our H3 graph, which is already sparse due to the strategies in Section \ref{subsec:graph_construction_h3}:
+For our H3 graph, which is already sparse we can apply some further performance optimizations:
 \begin{enumerate}
     \item Parallel versions of Kruskal's (like the author's Parallel GFK) or Boruvka's algorithm are directly applicable and offer good performance.
     \item The principle of Wang et al.'s GFK/MemoGFK (processing edges in batches based on weight ranges) can still be beneficial for managing memory and improving cache efficiency if $E_{sparse}$ remains very large (e.g., for global-scale analysis with a high average degree after sparsification).
@@ -129,7 +133,7 @@ For our H3 graph, which is already sparse due to the strategies in Section \ref{
 As the authors showed in their runtime decomposition figure, the MST Construction step has by far the shortest running time compared to their WSPD and Dendogram algorithms.
 The effort in constructing the MST efficiently is well-justified as the relatively fast computation of MSTs, especially with parallel and memory optimizations on sparse graphs, makes this approach viable for large-scale, planetary datasets of H3 cells.
 
-\subsection{Generating a Hierarchy of Clusters: Dendrogram Construction and H3 Multi-resolution}
+\subsection{Dendrograms and H3 Multi-resolution [Future Work]}
 \label{subsec:dendrogram_construction}
 
 Following construction of the MST from H3 cells, the next step is to derive a hierarchy of clusters. 
@@ -161,27 +165,27 @@ This integration is key to optimizing the selection of STAC assets to maximize P
         For each candidate STAC raster Item, its geographic footprint (a bounding box polygon) is converted into a set of H3 cells at a chosen base analysis resolution (e.g., $res_A$) using the \texttt{h3.polygon\_to\_cells(h3shape, res)} function. 
         This creates a \textit{discrete, gridded representation of each raster's coverage}.
 
+    \begin{figure}[htpb]
+        \centering
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=0.55\textwidth]{report/assets/figures/h3_polygonToCells_example_res9.png}
+            \caption{Polyfill of H3 cells at resolution 9}
+        \end{subfigure}
+        
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=0.55\textwidth]{report/assets/figures/h3_polygonToCells_example_res10.png}
+            \caption{Polyfill of H3 cells at resolution 10}
+        \end{subfigure}
+        \caption{Multi-Polygon at different H3 resolutions using \texttt{polygon\_to\_cells()}.}
+        % \label{fig:h3_polygon_to_cells}
+    \end{figure}
+
     \item \textbf{Contextualizing Raster H3 Cells with AOI Geometries:}
         The H3 cells derived from STAC raster polyfills of H3 cells are then spatially intersected with the geometry of an Area-of-Interest (AOI) (from Overture Maps \textit{division\_area} theme) which we convert to H3 Cells using the same function. 
         This step identifies, for each AOI, the subset of H3 cells from each overlapping raster that falls within its boundaries. We specifically only track raster-derived H3 cells that also correspond to H3 cells containing our PV PoIs. 
         In this way we can capture only the "cells of Interest" (COIs) for each STAC raster item and AOI.
-        
-        \begin{figure}[ht]
-            \centering
-            \begin{subfigure}{\textwidth}
-                \centering
-                \includegraphics[width=0.6\textwidth]{report/assets/figures/h3_polygonToCells_example_res9.png}
-                \caption{Polyfill of H3 cells at resolution 9 of an example Polygon}
-            \end{subfigure}
-            
-            \begin{subfigure}{\textwidth}
-                \centering
-                \includegraphics[width=0.6\textwidth]{report/assets/figures/h3_polygonToCells_example_res10.png}
-                \caption{Polyfill of H3 cells at resolution 10 of the same example Polygon with higher precision}
-            \end{subfigure}
-            % \caption{Representation of a STAC item footprint at different H3 resolutions using \texttt{polygon\_to\_cells()}. Higher resolutions provide more precise coverage representation at the cost of more cells.}
-            \label{fig:h3_polygon_to_cells}
-        \end{figure}
 
         Since we are simply accumulating counts and logging raster item ID's to each H3 cell, these operations lend themselves to simple SQL aggregation queries in \texttt{duckdb} using the available H3 duckdb bindings. 
         This lets us trivially vectorize and parallelize the aggregation process over vast STAC collections once the STAC catalogs \texttt{json} files are retrieved. 
@@ -232,8 +236,24 @@ This integration is key to optimizing the selection of STAC assets to maximize P
 \end{enumerate}
 This synergistic use of the MST-derived dendrogram (for identifying PV clusters) and H3's hierarchical functions (for representing STAC asset coverage, guiding asset accumulation, and curating training data) 
 forms a powerful strategy for targeted and efficient analysis of large-scale EO data archives.
+\bigskip
+
+\begin{algorithm}
+\caption{Optimized STAC Querying via H3-MST Clustering}
+\label{alg:stac_query_optimization}
+\begin{algorithmic}[1]
+    \State \textbf{Main Workflow:}
+    \State \textbf{Input:} Global set of PV Point-of-Interest (POI) data, Area-of-Interest (AOI) geometry (e.g., from Overture Maps), STAC Catalogs.
+    \State \textbf{Output:} Optimized set of STAC assets, \texttt{+} and \texttt{-} Curated training image chips.
+    \State $Unique\_H3\_Cells \leftarrow$ \Call{H3Indexing}{$PV\_POIs, \textit{analysis\_resolution}$}
+    \State $G_{H3} \leftarrow$ \Call{GraphConstruction}{$Unique\_H3\_Cells, \textit{sparsification\_parameters}$} 
+    \State $MST_{H3} \leftarrow$ \Call{MSTConstruction}{$G_{H3}$} 
+    \State $Hierarchy \leftarrow$ \Call{DendrogramGeneration}{$MST_{H3}$} 
+    \State $FinalAssets, CuratedData \leftarrow$ \newline \Call{OptimizedSTACQuery}{$\textit{Hierarchy}, \textit{Unique\_H3\_Cells}, \textit{AOI}, \textit{STAC\_Catalogs}$}
+\end{algorithmic}
+\end{algorithm}
 
 % \end{multicols}
 
-\clearpage
+% \clearpage
 

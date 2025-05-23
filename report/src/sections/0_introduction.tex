@@ -12,27 +12,26 @@
 % Brief description of the problem, objectives, methodology, and main findings. Less than 500 words.
 % emphasize the distinction between energy source replacement and badly labeled "energy transition" which has never ocurred historically and instead new energy sources have always been added to the energy mix
 The global response to climate change requires our civilization to implement a rapid transition to renewable energy sources in an effort to 
-decarbonize the energy sector as much as possible. The fastest growing renewable energy source is by far \textit{photovoltaic} (PV) solar energy [cite]. Growing at over 41\% per year on average since 2009\cite{kruitwagen_global_inventory_pv_units_2021},
+decarbonize the energy sector as much as possible. The fastest growing renewable energy source is by far \textit{photovoltaic} (PV) solar energy. Growing at over 41\% per year on average since 2009\cite{kruitwagen_global_inventory_pv_units_2021},
 PV solar energy has far outpaced other renewable energy sources such as concentrated solar power (CSP), hydroelectric storage, geothermal energy, and, to a lesser extent, wind energy. 
 % include figure for rapidly decreasing cost of PV energy and related battery storage technologies
 This rapid growth has led to significant progress in international development goals such as the United Nations Sustainable Development Goals (SDG) which, among other things, 
 addresses the population level needs for clean and affordable energy, and actions to tackle climate change and its impacts\cite{maxar_germany_pv_dataset}. 
 
-Historically, one of the most effective means to ensure global cooperation and uniform implementation of environmental and energy policies has been through the establishment of multi-lateral 
-international agreements such as the Montreal Protocol, the Kyoto Protocol, and, most recently, the Paris Climate Accords signed by (add figure of \% of countries signed and ref) countries. 
-This agreement resulted in \textit{non-binding} commitments to reduce greenhouse gas emissions and goals to limit global warming to 1.5 - 2.0 degrees Celsius above pre-industrial levels. 
+Historically, one of the most effective means to ensure global cooperation and uniform implementation of international environmental and energy policies has been through the establishment of multi-lateral agreements such as the Montreal Protocol, the Kyoto Protocol, and, most recently, the Paris Climate Accords signed by all but a handful of countries. 
+This agreement resulted in \textit{non-binding} commitments by nation-states to reduce greenhouse gas emissions and goals to limit global warming to 1.5 - 2.0 degrees Celsius above pre-industrial levels. 
 Notably, 87\% of these Nationally Determined Contributions (NDCs) aim to increase the share of renewable energy in their energy mix with half specifying empirical generation figures\cite{robinson_ms_planet_global_renewables_watch_2025}. 
 \textbf{To maintain any semblance of international accountability to these commitments, these NDCs require extensive and accurate global monitoring and validation of any expansion of renewable energy infrastructure.}
 
-To address this \textit{international policy problem} there has been a variety of efforts to assess the progress of each renewable energy source leading to recurring reports, inventories, assessments, and databases at the global, 
-regional, and national levels. Many of these efforts prove insufficient due to only providing aggregated summaries or statistical extrapolations at the national level (IRENA, IEA, BP), or being limited to specific regions 
+To monitor this \textit{international policy goal} there has been a variety of efforts to assess the progress of each renewable energy source leading to recurring reports, inventories, assessments, and databases at the global, 
+regional, and national levels. Many of these efforts prove insufficient due to only providing aggregated summaries or statistical extrapolations at the national level (IRENA, IEA, BP), or surveys limited to specific regions 
 (i.e. primarily Europe, North America, and China). Particularly in the case of PV solar energy, there has been very significant progress over the last decade in the development of remote sensing and deep learning methods to assess 
-the distribution of PV solar energy at the site, regional, and global levels (cite the many PV assessment papers).
+the distribution of PV solar energy at the site, regional, and global levels\cite{Yu_deep_solar_2018}\cite{Hu_solar_array_pitfalls_2022}\cite{de-Hoog_sota_survey_2020}\cite{Jiang_rooftop_pv_assessment_2022}\cite{kruitwagen_global_inventory_pv_units_2021}\cite{yang_GloSoFarID_2024}\cite{Tremenbert_Kasmi_pyPV_roof_2023}\cite{Pueblas_workflow_rooftop_PV_assessment_sat_img_2023}\cite{feng_10m_S2_China_2024}\cite{robinson_ms_planet_global_renewables_watch_2025}.  
 Most recently, a collaboration between Microsoft, the Nature Conservancy, and Planet Labs\cite{robinson_ms_planet_global_renewables_watch_2025} has produced \textit{``Global Renewables Watch''}, 
 a public dataset of industrial, commercial, and utility-scale PV solar energy and wind energy installations firmly establishing the \textbf{feasibility of using high-resolution satellite imagery and deep learning methods 
-to assess the distribution of renewable energy infrastructure at the Planetary scale}.
+to assess the distribution of renewable energy infrastructure at the Planetary scale}.  \\
 
-These publications and datasets have primarily focused on large-scale, utility-scale PV solar energy installations (i.e. badly labeled ``solar farms'') which are 
+These publications and datasets have primarily focused on large-scale, utility-scale PV solar energy installations (``solar farms'') which are 
 typically located in remote areas with broad land availability and low land use conflicts. However, for some places, land comes at a premium and concentrated large-scale solar energy installations are 
 either not economically or politically feasible due to not being the most efficient use of land and other land use conflicts. This leads to countries or regions where distributed, small-scale rooftop or building-integrated 
 PV solar energy installations make up a significant portion of the total installed capacity which is not captured in assessment limited to large-scale installations. 
@@ -40,12 +39,10 @@ For example, Robinson et al\cite{robinson_ms_planet_global_renewables_watch_2025
 
 Additionally, intermittent renewable energy sources bring about a second \textit{technical problem} that also calls for assessments and inventories at a smaller spatial \textbf{and} temporal scale. The intermittency of renewable energy sources such as wind and solar energy means that energy grid operators require accurate short-term forecasts of energy generation to ensure that national electric grid 
 supply and demand are balanced. PV solar energy is particularly sensitive to local weather conditions, regional cloud dynamics, and received solar irradiance which can both be monitored using 
-remote sensing methods and local weather stations (cite). There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
+remote sensing methods and local weather stations\cite{Li_solarcube_solar_forecasting_2024}\cite{Boussif_neurips_day_ahead_solar_forecasting_2023}. There has been recent work in the use of geostationary satellites with high temporal resolution to provide short-term forecasts of solar irradiance at the site level\cite{Bansal_ssl_nowcasting_2022}, 
 the use of spectral reflectance features in Computer Vision (CV) models for PV solar array detection\cite{He_universal_pv_spectral_index_2024}, and advances in spatio-temporal data fusion methods to improve the temporal resolution of very-high-resolution (VHR) satellite imagery\cite{Tremenbert_Kasmi_pyPV_roof_2023}. 
 
-This project looks to outline the work required to address these interconnected challenges by tackling three core subproblems leveraging remote sensing data and advances in deep learning methods:
-    % \vfill\null
-    % \columnbreak
+This project looks to outline the work required to address these interconnected challenges by tackling \textbf{three core subproblems} leveraging remote sensing data and advances in deep learning methods:
 
 \subsubsection{[CCOM6120] Subproblem 1:}
     \textbf{Detection and Segmentation of distributed rooftop PV Systems using Computer Vision baseline models} 
@@ -57,6 +54,8 @@ This project looks to outline the work required to address these interconnected 
     % \columnbreak
     We will use the final project for CCOM6120 as preliminary work on this subproblem. We will explore baseline segmentation model architectures (e.g. UNet, FPN, PAN, SegFormer, etc.) and 
     encoder combinations (e.g. ResNet, EfficientNet, ViT, Swin, etc.) and how they perform on some existing published and open datasets. As part of the project we will develop and establish some baseline data processing pipelines, model training workflows, and evaluation metrics.
+
+    \clearpage
 
 \subsubsection{[CCOM6050] Subproblem 2:} 
     \textbf{Hierarchical Spatial Clustering of global PV installations to optimize global dataset generation} 

@@ -15,7 +15,10 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{graphicx}
 \hypersetup{
     colorlinks=true,
@@ -48,13 +51,13 @@
 % Makes header
 \pagestyle{fancy}
 \thispagestyle{empty}
-\fancyhead[R]{\textit{Alejandro S. Vega-Nogales}}
+\fancyhead[R]{\textit{ASVN}}
 \fancyhead[L]{Report Date: May 2025}
 % Makes footnotes with an asterisk
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \begin{center}
     \Large{\textbf{Remote Sensing Assessment and Monitoring of Distributed large and small scale Solar Panel Arrays}}
-\vspace{0.5cm}
+\vspace{0.25cm}
 {\color{gray}\hrule}
 \medskip
 \large\textbf{A report on baseline Computer Vision models and algorithms for optimizing generation of a Planetary dataset} \\
@@ -66,7 +69,7 @@ SIN: 801-13-7956 \quad github: \href{https://github.com/avega17}{avega17}  \quad
 \textit{UPRRP - Computer Science Department} \\
 \vspace{0.1cm}
 CCOM 6050: Final Project -- Final Report
-% \medskip
+\medskip
 \normalsize
 \end{center}
 {\color{gray}\hrule} 
@@ -74,7 +77,7 @@ CCOM 6050: Final Project -- Final Report
 
 \tableofcontents
 \hfill
-\clearpage
+% \clearpage
 
 % Define path prefixes
 \newcommand{\reportpath}{./report/src}
@@ -84,15 +87,16 @@ CCOM 6050: Final Project -- Final Report
 % \clearpage
 \input{\reportpath/sections/1_background.tex}
 {\color{gray}\hrule}
-% \clearpage
 \input{\reportpath/sections/2_methodology.tex}
+\clearpage
 \input{\reportpath/sections/3_algorithms.tex}
 % \input{\sectionspath/3_section.tex} % in case you need it
 % \input{\sectionspath/4_section.tex} % in case you need it
 % \input{\reportpath/sections/5_review.tex}
 \input{\reportpath/sections/6_conclusion.tex}
-\clearpage
-\bibliographystyle{plain}
+% \clearpage
+\vspace{0.6cm}
+\bibliographystyle{IEEEtran}
 \bibliography{\reportpath/bibliography/references}
 \end{document}
 
