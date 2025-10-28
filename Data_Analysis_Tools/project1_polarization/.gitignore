@@ -1,0 +1,10 @@
+senate_dataset/*
+*.duckdb
+.env
+uv.lock
+__pycache__
+*.pyc
+.DS_Store
+.vscode/
+.ipynb_checkpoints/
+logs/
