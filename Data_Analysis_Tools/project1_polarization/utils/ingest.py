@@ -209,9 +209,9 @@ def ingest_member_metadata(
     if export:
         uri_filename = source.split("/")[-1]
         export_path = os.path.join(settings.votes_dir, uri_filename)
-        export_query = """
+        export_query = f"""
             COPY (
-                SELECT * FROM {settings.members_table}
+                SELECT * FROM {settings.members_table}    
             )
             TO '{_escape_literal(export_path)}'
             (FORMAT 'csv', HEADER TRUE, OVERWRITE_OR_IGNORE TRUE);
@@ -501,3 +501,4 @@ def load_congress_dates(settings: Settings) -> pd.DataFrame:
         return fetch_congress_dates(settings)
     
     return pd.read_csv(dates_file)
+
